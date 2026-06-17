@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chapter 10 – User Interfaces and Visualization</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #f7f8fc;
+    --card: #ffffff;
+    --primary: #2563eb;
+    --primary-light: #dbeafe;
+    --accent: #7c3aed;
+    --accent-light: #ede9fe;
+    --success: #059669;
+    --success-light: #d1fae5;
+    --warning: #d97706;
+    --warning-light: #fef3c7;
+    --danger: #dc2626;
+    --danger-light: #fee2e2;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --section-num-bg: #2563eb;
+    --tag-bg: #f1f5f9;
+    --tag-text: #475569;
+    --highlight: #fef9c3;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ─── TOP HEADER ─────────────────────────────────────────── */
+  .page-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #7c3aed 100%);
+    color: white;
+    padding: 48px 40px 40px;
+  }
+  .page-header .breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; opacity: 0.75; margin-bottom: 16px;
+  }
+  .page-header h1 {
+    font-family: 'Merriweather', serif;
+    font-size: clamp(26px, 5vw, 40px);
+    font-weight: 700; line-height: 1.25;
+    letter-spacing: -0.5px;
+  }
+  .page-header .subtitle {
+    margin-top: 8px; opacity: 0.85; font-size: 14px;
+  }
+
+  /* ─── TOPICS COVERED BOX ─────────────────────────────────── */
+  .topics-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 40px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
+  }
+  .topics-box .label {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 14px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    background: var(--tag-bg); color: var(--tag-text);
+    border: 1px solid var(--border);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 13px; font-weight: 500;
+  }
+
+  /* ─── MAIN CONTENT ───────────────────────────────────────── */
+  .content { padding: 8px 40px 60px; max-width: 1080px; }
+
+  /* ─── SECTION HEADING ────────────────────────────────────── */
+  .section-block { margin-bottom: 40px; }
+  .section-heading {
+    display: flex; align-items: center; gap: 14px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--primary-light);
+    margin-bottom: 18px;
+  }
+  .section-num {
+    background: var(--section-num-bg); color: white;
+    font-size: 13px; font-weight: 700;
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-heading h2 {
+    font-size: 22px; font-weight: 700; color: var(--text);
+  }
+
+  /* ─── SUB-SECTION HEADING ────────────────────────────────── */
+  .sub-heading {
+    font-size: 16px; font-weight: 700;
+    color: var(--primary);
+    margin: 24px 0 10px;
+    padding-left: 12px;
+    border-left: 3px solid var(--primary);
+  }
+  .sub-sub-heading {
+    font-size: 14px; font-weight: 700;
+    color: var(--accent);
+    margin: 18px 0 8px;
+  }
+
+  /* ─── DEFINITION CARD ────────────────────────────────────── */
+  .def-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  .def-card p { color: var(--text); line-height: 1.75; }
+  .def-card strong { color: var(--primary); }
+  .def-card em { color: var(--accent); font-style: italic; }
+
+  /* ─── BULLET LISTS ───────────────────────────────────────── */
+  .bullet-list { list-style: none; padding: 0; margin: 0 0 16px; }
+  .bullet-list li {
+    padding: 6px 0 6px 24px;
+    position: relative; line-height: 1.65;
+    color: var(--text);
+  }
+  .bullet-list li::before {
+    content: '';
+    position: absolute; left: 6px; top: 14px;
+    width: 7px; height: 7px;
+    border-radius: 50%; background: var(--primary);
+  }
+  .bullet-list li strong { color: var(--text); }
+
+  /* ─── NUMBERED LIST ──────────────────────────────────────── */
+  .num-list { list-style: none; padding: 0; margin: 0 0 16px; counter-reset: item; }
+  .num-list li {
+    padding: 8px 0 8px 36px;
+    position: relative; line-height: 1.7;
+    counter-increment: item;
+  }
+  .num-list li::before {
+    content: counter(item);
+    position: absolute; left: 0; top: 8px;
+    background: var(--primary); color: white;
+    font-size: 11px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ─── INFO / WARNING / SUCCESS BOXES ────────────────────── */
+  .info-box {
+    border-radius: 10px; padding: 16px 20px;
+    margin: 16px 0; line-height: 1.7;
+    border-left: 4px solid;
+  }
+  .info-box.blue  { background: var(--primary-light);  border-color: var(--primary);  color: #1e3a8a; }
+  .info-box.purple{ background: var(--accent-light);   border-color: var(--accent);   color: #4c1d95; }
+  .info-box.green { background: var(--success-light);  border-color: var(--success);  color: #064e3b; }
+  .info-box.yellow{ background: var(--warning-light);  border-color: var(--warning);  color: #78350f; }
+  .info-box.red   { background: var(--danger-light);   border-color: var(--danger);   color: #7f1d1d; }
+  .info-box .box-title { font-weight: 700; font-size: 13px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+
+  /* ─── TABLE ──────────────────────────────────────────────── */
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th {
+    background: var(--primary); color: white;
+    padding: 10px 14px; text-align: left; font-weight: 600;
+  }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  tr:nth-child(even) td { background: #f8fafc; }
+  tr:hover td { background: var(--primary-light); }
+
+  /* ─── IMAGE PLACEHOLDER ──────────────────────────────────── */
+  .img-notice {
+    background: #f8fafc;
+    border: 2px dashed #94a3b8;
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin: 18px 0 10px;
+    color: var(--text-muted);
+    font-size: 13px; font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .img-notice svg { flex-shrink: 0; }
+
+  .svg-figure {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 12px 0 24px;
+    text-align: center;
+  }
+  .svg-figure figcaption {
+    font-size: 12px; color: var(--text-muted);
+    margin-top: 10px; font-style: italic;
+  }
+
+  /* ─── PROCESS STEPS ─────────────────────────────────────── */
+  .steps { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+  .step {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 18px;
+  }
+  .step-num {
+    background: var(--accent); color: white;
+    font-size: 12px; font-weight: 700;
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .step-content strong { display: block; color: var(--text); font-size: 14px; margin-bottom: 2px; }
+  .step-content span { color: var(--text-muted); font-size: 13.5px; }
+
+  /* ─── COMPARISON GRID ────────────────────────────────────── */
+  .compare-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px; margin: 16px 0;
+  }
+  @media(max-width:600px){ .compare-grid{ grid-template-columns:1fr; } }
+  .compare-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 20px;
+  }
+  .compare-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--primary); }
+  .compare-card.old h4 { color: var(--danger); }
+  .compare-card.new h4 { color: var(--success); }
+
+  p { margin-bottom: 12px; color: var(--text); }
+  hr { border:none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  @media(max-width:700px){
+    .page-header { padding: 32px 20px; }
+    .topics-box  { margin: 20px 16px; }
+    .content     { padding: 8px 16px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ PAGE HEADER ═══════════════════════════════════════════════ -->
+<div class="page-header">
+  <div class="breadcrumb">
+    📘 Structured Notes &nbsp;/&nbsp; Information Retrieval &nbsp;·&nbsp; Unit V
+  </div>
+  <h1>Chapter 10 – User Interfaces and Visualization</h1>
+  <p class="subtitle">Based on: Manning, Raghavan &amp; Schütze · Introduction to Information Retrieval</p>
+</div>
+
+<!-- ═══ TOPICS COVERED ════════════════════════════════════════════ -->
+<div class="topics-box">
+  <div class="label">📋 Topics Covered</div>
+  <div class="tags">
+    <span class="tag">Introduction to UI</span>
+    <span class="tag">Human-Computer Interaction</span>
+    <span class="tag">Design Principles</span>
+    <span class="tag">Role of Visualization</span>
+    <span class="tag">Information Access Process</span>
+    <span class="tag">Models of Interaction</span>
+    <span class="tag">Starting Points</span>
+    <span class="tag">Overviews &amp; Clustering</span>
+    <span class="tag">Query Specification</span>
+    <span class="tag">Document Surrogates</span>
+    <span class="tag">Relevance Feedback</span>
+    <span class="tag">Interface Support</span>
+    <span class="tag">Visualization Systems</span>
+    <span class="tag">Trends &amp; Research</span>
+  </div>
+</div>
+
+<!-- ═══ MAIN CONTENT ══════════════════════════════════════════════ -->
+<div class="content">
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION 1: Introduction
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">1</div>
+    <h2>Introduction</h2>
+  </div>
+  <div class="def-card">
+    <p>This chapter discusses <strong>user interfaces</strong> for communication between human information seekers and information retrieval (IR) systems.</p>
+    <p>Information seeking is an <em>imprecise process</em> — users often have only a fuzzy idea of what they want when they start.</p>
+  </div>
+  <p><strong>What should a good UI do?</strong></p>
+  <ul class="bullet-list">
+    <li>Help users understand and express their information needs</li>
+    <li>Help formulate queries effectively</li>
+    <li>Help users choose among available information sources</li>
+    <li>Help understand search results</li>
+    <li>Help track progress of the search</li>
+  </ul>
+  <div class="info-box yellow">
+    <div class="box-title">📌 Key Point</div>
+    The human-computer interface is less well understood than other IR aspects because humans are more complex — their motivations and behaviours are harder to measure. This area is also changing rapidly.
+  </div>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION 2: Human-Computer Interaction
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">2</div>
+    <h2>Human-Computer Interaction</h2>
+  </div>
+  <div class="def-card">
+    <p>An effective human-computer interface almost <strong>disappears</strong> — users feel in control, competent, and clear. When well-designed, the interface lets users concentrate on their actual goal.</p>
+  </div>
+
+  <!-- 2.1 Design Principles -->
+  <div class="sub-heading">2.1 Design Principles</div>
+  <p>Shneiderman's key principles for information access UI design:</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>Offer Informative Feedback</strong>
+        <span>Give users constant feedback about: the relationship between their query and retrieved documents, relationships among documents, and relationships between documents and collection metadata. Letting users control when/how feedback is given ensures an <em>internal locus of control</em>.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>Permit Easy Reversal of Actions</strong>
+        <span>Users should be able to undo or backtrack without losing their context or earlier work.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>Reduce Working Memory Load</strong>
+        <span>Information access is iterative — goals shift as new info is found. Good UIs help by: keeping track of choices made during a search, letting users return to abandoned strategies, retaining context across sessions, and providing browsable suggestions (related terms, topic lists, source lists).</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <strong>Provide Alternative Interfaces for Novice and Expert Users</strong>
+        <span>Simple interfaces are easy to learn but less flexible. Powerful interfaces give experts more control. A common fix is <em>scaffolding</em> — a simple interface for beginners with advanced options available for experts. The key: intuitive bridges between simple and advanced modes.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box blue">
+    <div class="box-title">💡 Simplicity vs. Power Tradeoff</div>
+    A major design question is <strong>how much information to show</strong> about the system itself. New users may not know how to handle complex features. Experienced users can benefit from seeing suggested terms, weights, etc. Finding the right balance is a core design challenge.
+  </div>
+
+  <!-- 2.2 Role of Visualization -->
+  <div class="sub-heading">2.2 The Role of Visualization</div>
+  <div class="def-card">
+    <p><strong>Information Visualization</strong> attempts to provide visual depictions of very large information spaces. Humans are highly attuned to images — a well-designed visual can communicate information far faster than any other method.</p>
+  </div>
+
+  <p><strong>Key visualization concepts:</strong></p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Concept</th><th>Meaning</th></tr>
+      <tr><td><strong>Brushing &amp; Linking</strong></td><td>Connecting two or more views of the same data — a change in one view updates all other views automatically.</td></tr>
+      <tr><td><strong>Panning &amp; Zooming</strong></td><td>Like a movie camera — panning scans sideways, zooming moves in for detail or back for a wider view.</td></tr>
+      <tr><td><strong>Focus-plus-Context</strong></td><td>One part of the view (the focus) is shown in detail while surrounding content is compressed. Partly solves the problem of losing context when zooming in.</td></tr>
+    </table>
+  </div>
+
+  <div class="info-box purple">
+    <div class="box-title">⚠ Challenge</div>
+    Visualizing <em>abstract</em> or <em>textual</em> information is especially hard because language communicates abstract ideas with no obvious physical form.
+  </div>
+
+  <!-- 2.3 Evaluating Interactive Systems -->
+  <div class="sub-heading">2.3 Evaluating Interactive Systems</div>
+  <ul class="bullet-list">
+    <li>People differ in spatial ability, memory, reasoning, verbal aptitude, age, and cultural background — all affecting UI usability.</li>
+    <li>Precision and recall (standard IR metrics) are less appropriate for evaluating interactive systems.</li>
+    <li>Better metrics for interactive systems: <strong>time to learn</strong>, <strong>time to complete tasks</strong>, <strong>error rates</strong>, <strong>retention of interface over time</strong>.</li>
+    <li>Empirical data from user studies is expensive and hard to generalise.</li>
+    <li>Nielsen advocates <strong>heuristic evaluation</strong>: an informal assessment of UI affordances against general usability properties — without requiring statistically significant results.</li>
+  </ul>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION 3: The Information Access Process
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">3</div>
+    <h2>The Information Access Process</h2>
+  </div>
+  <div class="def-card">
+    <p>A person engaged in information-seeking has <strong>goals</strong> and uses a search system as a tool to achieve them. Goals range widely — from finding a plumber to writing a scholarly article.</p>
+  </div>
+
+  <p>A study of business analysts found three main types of information-seeking behaviours:</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>Monitoring</strong>
+        <span>Tracking a familiar topic over time (e.g., researching a competitor each quarter).</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>Planned Searching</strong>
+        <span>Following a structured/routine set of searches to achieve a known objective (e.g., keeping up with business best practices).</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>Exploratory Searching</strong>
+        <span>Open-ended exploration to become familiar with a new subject or industry.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 Models of Interaction -->
+  <div class="sub-heading">4. Models of Interaction</div>
+  <p>The <strong>standard interaction cycle</strong> for information access:</p>
+  <ol class="num-list">
+    <li>Start with an information need.</li>
+    <li>Select a system and collection to search.</li>
+    <li>Formulate a query.</li>
+    <li>Send the query to the system.</li>
+    <li>Receive results (information items).</li>
+    <li>Scan, evaluate, and interpret the results.</li>
+    <li>Either <strong>stop</strong>, or…</li>
+    <li>Reformulate the query and repeat from Step 4.</li>
+  </ol>
+
+  <div class="info-box red">
+    <div class="box-title">❌ Problems with the Standard Model</div>
+    <ul class="bullet-list" style="margin:0">
+      <li>Assumes the user's information need stays the same throughout.</li>
+      <li>Assumes the goal is to find a "perfect" set of results.</li>
+      <li>Ignores dynamic learning — users often change goals mid-search.</li>
+      <li>Presents users with long, unstructured result lists.</li>
+      <li>Doesn't account for hyperlink navigation, browsing, or topic scanning.</li>
+    </ul>
+  </div>
+
+  <div class="sub-sub-heading">The Berry-Picking Model (Marcia Bates)</div>
+  <div class="def-card">
+    <p>This model challenges the traditional view by recognising how people <em>actually</em> search in real situations.</p>
+  </div>
+  <ul class="bullet-list">
+    <li><strong>Information needs evolve</strong> — as users find new info, their goals may shift or branch.</li>
+    <li>Users gather <strong>bits and pieces</strong> from different sources (like picking berries one by one).</li>
+    <li>There is <strong>no final "perfect" result set</strong> — the process is incremental and adaptive.</li>
+    <li>Emphasises <em>learning, scanning, exploring,</em> and <em>changing strategies</em>.</li>
+  </ul>
+  <div class="info-box green">
+    <div class="box-title">✅ Example</div>
+    A user searching for "history of climate change" might read an article, discover a new interest in "climate policy in the 1980s", shift focus, search again, and gradually build knowledge from many different documents.
+  </div>
+
+  <p><strong>Implications for User Interfaces:</strong> To support real-world information seeking, interfaces should let users:</p>
+  <ul class="bullet-list">
+    <li>Adjust goals mid-search</li>
+    <li>Switch strategies easily</li>
+    <li>Track progress and store intermediate results</li>
+    <li>Resume previous search paths</li>
+    <li>Integrate multiple strategies (e.g., browsing and querying together)</li>
+    <li>Support exploration, navigation, and serendipitous discovery</li>
+  </ul>
+
+  <div class="sub-sub-heading">Modes of Interacting with Information</div>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Mode</th><th>Description</th></tr>
+      <tr><td><strong>Scanning</strong></td><td>Quickly looking over structures — titles, labels, links.</td></tr>
+      <tr><td><strong>Querying</strong></td><td>Actively searching by inputting keywords or selecting terms.</td></tr>
+      <tr><td><strong>Navigating</strong></td><td>Clicking through links to reach related content.</td></tr>
+      <tr><td><strong>Browsing</strong></td><td>Casual, less goal-directed exploration of content.</td></tr>
+    </table>
+  </div>
+  <div class="info-box blue">
+    <div class="box-title">💡 Remember</div>
+    These modes often interact — e.g., scanning leads to browsing, which leads to querying. The output of one action (e.g., finding a useful term) should naturally feed into the next (e.g., forming a new query).
+  </div>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION 5: Non-Search Parts
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">5</div>
+    <h2>Non-Search Parts of the Information Access Process</h2>
+  </div>
+  <div class="def-card">
+    <p>Information seeking is only <strong>one part</strong> of the full work process. Between searching sessions, users do: reading, annotating, and analysis.</p>
+  </div>
+  <p>O'Day and Jeffries found that <strong>80% of analysis work</strong> falls into six types:</p>
+  <ul class="bullet-list">
+    <li>Finding trends</li>
+    <li>Making comparisons</li>
+    <li>Aggregating information</li>
+    <li>Identifying a critical subset</li>
+    <li>Assessing</li>
+    <li>Interpreting</li>
+  </ul>
+  <p>The remaining 20%: cross-referencing, summarising, finding visualisations for reports, and miscellaneous.</p>
+  <div class="info-box purple">
+    <div class="box-title">🔑 Key Idea — Sensemaking (Russell et al.)</div>
+    Most effort in information work is in the <em>synthesis of a good representation</em> — formulating and crystallising the important concepts. User interfaces should allow search/retrieval AND analysis/synthesis to be <strong>tightly interwoven</strong>.
+  </div>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION 6: Earlier Interface Studies
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">6</div>
+    <h2>Earlier Interface Studies</h2>
+  </div>
+  <div class="compare-grid">
+    <div class="compare-card old">
+      <h4>❌ Earlier Systems (Pre-Internet Era)</h4>
+      <ul class="bullet-list">
+        <li>Used only bibliographic records (titles, abstracts).</li>
+        <li>Required professional intermediaries to search.</li>
+        <li>Used Boolean logic (AND, OR, NOT) — rigid and hard to use.</li>
+        <li>Text-only interfaces (TTYs) required memorising commands.</li>
+        <li>Switching databases was slow and complex.</li>
+      </ul>
+    </div>
+    <div class="compare-card new">
+      <h4>✅ Modern Systems</h4>
+      <ul class="bullet-list">
+        <li>Full-text search (actual content of web pages/papers).</li>
+        <li>End users (non-experts) do the searching themselves.</li>
+        <li>Statistical ranking (like Google's relevance ranking).</li>
+        <li>Documents are hyperlinked — seamless navigation.</li>
+        <li>Graphical interfaces with direct manipulation.</li>
+        <li>A "near miss" result is still useful — follow links to better content.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Starting Points -->
+  <div class="sub-heading">1. Starting Points</div>
+  <div class="def-card">
+    <p>Users usually start with very short queries, inspect results, and modify incrementally. An empty form or blank screen gives no clues to help users start.</p>
+  </div>
+  <p>Four main types of starting points:</p>
+  <ul class="bullet-list">
+    <li><strong>Lists</strong> — lists of sources/collections to choose from</li>
+    <li><strong>Overviews</strong> — summaries of what's in the collection</li>
+    <li><strong>Examples</strong> — sample documents to orient the user</li>
+    <li><strong>Automated source selection</strong> — system picks the best source</li>
+  </ul>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION 7: Lists of Collections
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">7</div>
+    <h2>Lists of Collections</h2>
+  </div>
+  <div class="def-card">
+    <p>Online systems like LEXIS-NEXIS start by showing a long list of source names and asking users to guess which ones are relevant — often with little additional information about each source.</p>
+  </div>
+  <ul class="bullet-list">
+    <li>Experienced users learn which sources suit their needs through trial-and-error, training, or recommendations.</li>
+    <li>They use <strong>"favorites" lists</strong> (also called bookmarks/hotlists on the Web).</li>
+    <li><strong>Challenge</strong>: For new or unfamiliar topics, favorites don't help. Traditional interfaces make discovering new sources difficult for regular users.</li>
+  </ul>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION 8: Overviews
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">8</div>
+    <h2>Overviews</h2>
+  </div>
+  <div class="def-card">
+    <p>Overviews show the topic domains represented in a collection, helping users select or eliminate sources. Shneiderman's model: <em>overview → zoom/filter → details</em>.</p>
+  </div>
+
+  <p><strong>Three types of overviews:</strong></p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>Topical Hierarchies (Manual Categories)</strong>
+        <span>Tree structures showing categories and subcategories. Documents organised by predefined themes. Users browse through categories to find relevant content.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>Automatically Generated Overviews (Clustering)</strong>
+        <span>Machine learning groups documents by content similarity without human input. Helps reveal hidden patterns or groupings in large datasets.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>Link-Based Overviews (Co-Citation / Network Analysis)</strong>
+        <span>Based on connections (citations, links, shared references). Documents frequently cited together may be thematically related. Relationship networks define the groupings.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-sub-heading">Category / Directory Overviews</div>
+  <p>Examples of category-based systems: <strong>Traditional Libraries</strong> (subject headings), <strong>MEDLINE/MeSH</strong> (~18,000 categories), <strong>ACM</strong> (~1,200 keyword categories), <strong>Yahoo! Directory</strong>.</p>
+
+  <p><strong>Problems with Category Systems:</strong></p>
+  <ul class="bullet-list">
+    <li><strong>Poor Interfaces:</strong> Users don't use subject headings because the UI is bad (e.g., old command-line).</li>
+    <li><strong>Hard to Navigate:</strong> Users must guess the right category; wrong guesses require backtracking.</li>
+    <li><strong>Deep navigation loses context</strong> — users forget what they were originally looking for.</li>
+    <li><strong>Limited search capability:</strong> Most systems don't allow searching across multiple categories simultaneously.</li>
+    <li><strong>Large screen space needed</strong> to display full hierarchies.</li>
+  </ul>
+
+  <p><strong>Systems attempting to improve on these problems:</strong></p>
+  <ul class="bullet-list">
+    <li><strong>Internet Grateful Med:</strong> Web interface to MeSH — but clicking a category loses search context and makes navigation clumsy.</li>
+    <li><strong>MeSHBrowse:</strong> Interactive browsing of MeSH hierarchy in 2D tree view — limited to browsing, no direct document search.</li>
+    <li><strong>HiBrowse:</strong> Faceted navigation (Disease, Therapy, Age Group, etc.), shows document counts dynamically — but querying is not tightly integrated.</li>
+  </ul>
+
+  <div class="sub-sub-heading">Automatically Derived Collection Overviews (Clustering)</div>
+  <div class="def-card">
+    <p>Unsupervised clustering groups documents by similarity. Each cluster has a <strong>centroid</strong> describing its main theme. This lets users explore a high-level overview without reading every document.</p>
+  </div>
+
+  <p><strong>Scatter/Gather System:</strong> Clusters a large collection → shows summary terms + sample titles → user selects clusters → re-clusters for deeper exploration.</p>
+
+  <div class="info-box yellow">
+    <div class="box-title">⚠ Limitations</div>
+    <ul class="bullet-list" style="margin:0">
+      <li>Scatter/Gather alone was less effective than traditional search for finding relevant documents.</li>
+      <li>When combined with search (clustering query results), performance improved significantly.</li>
+      <li>No single clustering algorithm consistently outperforms others.</li>
+      <li>Generated themes can be inconsistently specific/broad, confusing users.</li>
+    </ul>
+  </div>
+
+  <p><strong>Visual representations of clustering:</strong></p>
+  <ul class="bullet-list">
+    <li><strong>Scatter-plot layouts:</strong> Each document = a small icon in 2D space. Examples: BEAD, Galaxy of News, ThemeScape (3D topographic "mountains").</li>
+    <li><strong>Kohonen Feature Maps:</strong> A neural network arranging documents in 2D grids by theme. Adjacent regions are semantically related.</li>
+    <li><strong>Inter-document similarity graphs:</strong> Networks showing how documents relate to each other.</li>
+  </ul>
+
+  <!-- Image Figure 10.x - Kohonen/Scatter -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to the Kohonen Feature Map / Scatter/Gather diagram in the original PDF (Chapter 10, Overviews section). Illustration below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 520 220" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="520" height="220" fill="#f8fafc" rx="8"/>
+      <text x="260" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">Kohonen Feature Map / Clustering Overview</text>
+      <!-- Grid cells -->
+      <g>
+        <rect x="30" y="36" width="68" height="50" rx="5" fill="#dbeafe" stroke="#2563eb" stroke-width="1.2"/>
+        <text x="64" y="58" text-anchor="middle" font-size="10" fill="#1e3a8a">AI / ML</text>
+        <text x="64" y="72" text-anchor="middle" font-size="9" fill="#475569">● doc1 ● doc2</text>
+
+        <rect x="106" y="36" width="68" height="50" rx="5" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.2"/>
+        <text x="140" y="58" text-anchor="middle" font-size="10" fill="#4c1d95">Biology</text>
+        <text x="140" y="72" text-anchor="middle" font-size="9" fill="#475569">● doc5 ● doc9</text>
+
+        <rect x="182" y="36" width="68" height="50" rx="5" fill="#d1fae5" stroke="#059669" stroke-width="1.2"/>
+        <text x="216" y="58" text-anchor="middle" font-size="10" fill="#064e3b">Medicine</text>
+        <text x="216" y="72" text-anchor="middle" font-size="9" fill="#475569">● doc3 ● doc7</text>
+
+        <rect x="258" y="36" width="68" height="50" rx="5" fill="#fef3c7" stroke="#d97706" stroke-width="1.2"/>
+        <text x="292" y="58" text-anchor="middle" font-size="10" fill="#78350f">History</text>
+        <text x="292" y="72" text-anchor="middle" font-size="9" fill="#475569">● doc10 ● doc4</text>
+
+        <rect x="30" y="96" width="68" height="50" rx="5" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.2"/>
+        <text x="64" y="118" text-anchor="middle" font-size="10" fill="#4c1d95">Robotics</text>
+        <text x="64" y="132" text-anchor="middle" font-size="9" fill="#475569">● doc6</text>
+
+        <rect x="106" y="96" width="68" height="50" rx="5" fill="#fee2e2" stroke="#dc2626" stroke-width="1.2"/>
+        <text x="140" y="118" text-anchor="middle" font-size="10" fill="#7f1d1d">Chemistry</text>
+        <text x="140" y="132" text-anchor="middle" font-size="9" fill="#475569">● doc8 ● doc11</text>
+
+        <rect x="182" y="96" width="68" height="50" rx="5" fill="#dbeafe" stroke="#2563eb" stroke-width="1.2"/>
+        <text x="216" y="118" text-anchor="middle" font-size="10" fill="#1e3a8a">Physics</text>
+        <text x="216" y="132" text-anchor="middle" font-size="9" fill="#475569">● doc12</text>
+
+        <rect x="258" y="96" width="68" height="50" rx="5" fill="#d1fae5" stroke="#059669" stroke-width="1.2"/>
+        <text x="292" y="118" text-anchor="middle" font-size="10" fill="#064e3b">Nutrition</text>
+        <text x="292" y="132" text-anchor="middle" font-size="9" fill="#475569">● doc13 ● doc14</text>
+      </g>
+      <!-- Legend -->
+      <text x="350" y="52" font-size="11" font-weight="600" fill="#1e293b">Key Idea:</text>
+      <text x="350" y="68" font-size="10" fill="#475569">Adjacent cells are</text>
+      <text x="350" y="82" font-size="10" fill="#475569">semantically related.</text>
+      <text x="350" y="98" font-size="10" fill="#475569">Hover cursor → see</text>
+      <text x="350" y="112" font-size="10" fill="#475569">document titles.</text>
+      <text x="350" y="128" font-size="10" fill="#475569">2D neural-network map</text>
+      <text x="350" y="142" font-size="10" fill="#475569">of a document collection.</text>
+      <!-- Arrow showing adjacency -->
+      <line x1="174" y1="61" x2="184" y2="61" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ar)"/>
+      <defs><marker id="ar" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#6b7280"/></marker></defs>
+      <text x="260" y="200" text-anchor="middle" font-size="11" fill="#64748b" font-style="italic">Figure: Conceptual diagram of a Kohonen Feature Map for document clustering</text>
+    </svg>
+    <figcaption>Conceptual representation of a Kohonen Feature Map. Documents are mapped to 2D regions by theme; adjacent regions share related content.</figcaption>
+  </div>
+
+  <div class="sub-sub-heading">Evaluations of Graphical Overviews</div>
+  <p>User studies show graphical overviews are often <em>not very effective</em>, especially for general users.</p>
+  <div class="info-box yellow">
+    <div class="box-title">📊 Key Study: Kohonen Map vs Yahoo!</div>
+    <ul class="bullet-list" style="margin:0">
+      <li>11/15 users on Kohonen map found an interesting page, but only 2 could later find it again.</li>
+      <li>14/16 users on Yahoo! succeeded, but only 2 could navigate back on the Kohonen map.</li>
+      <li><strong>Conclusion:</strong> Yahoo!'s simple text-label view was more effective and navigable.</li>
+      <li>Users liked jumping easily between map areas; disliked lack of hierarchy and confusing labels.</li>
+    </ul>
+  </div>
+
+  <div class="sub-sub-heading">Co-Citation Clustering for Overviews</div>
+  <p>If two documents are <strong>cited together</strong> by another document, they are <em>co-cited</em>. Co-cited documents likely share related themes. These relationships build a <strong>similarity matrix</strong> that is then clustered.</p>
+  <ul class="bullet-list">
+    <li>Helps identify <strong>thematic clusters</strong> and <strong>central/key authors</strong>.</li>
+    <li><strong>Referral Web project</strong>: applies co-citation logic to web documents.</li>
+    <li><strong>Authority Pages (Kleinberg)</strong>: identifies good starting points for topics — pages that many others link to.</li>
+  </ul>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION 9: Automated Source Selection
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">9</div>
+    <h2>Automated Source Selection</h2>
+  </div>
+  <div class="def-card">
+    <p>Selecting the right source (database, website, search engine) is critical but hard to do manually. Automated methods help match user needs to the best sources.</p>
+  </div>
+
+  <p><strong>Two main approaches:</strong></p>
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h4>🤖 Modeling User + Source (AI-driven)</h4>
+      <ul class="bullet-list">
+        <li>Build a model of the user's information need.</li>
+        <li>Build a model of each source's content.</li>
+        <li>Match them to find the best source.</li>
+        <li>Used in: user modeling systems, intelligent tutoring, online help.</li>
+        <li><strong>Challenge:</strong> Complex and resource-heavy.</li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <h4>📊 Content-Based Matching (Practical)</h4>
+      <ul class="bullet-list">
+        <li>Uses textual representations of sources, directly compared to the query.</li>
+        <li><strong>GIOSS:</strong> checks how often query terms appear in databases; selects the best one.</li>
+        <li><strong>SavvySearch:</strong> uses both query and user click-through behaviour to rank sources.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="info-box blue">
+    <div class="box-title">🔍 Alternative: Metasearch &amp; Collection Fusion</div>
+    Instead of picking one best source, send the query to <strong>multiple sources at once</strong> and combine results. This is what <em>metasearch engines</em> do (e.g., Dogpile, Metacrawler). <strong>Collection fusion</strong> — how to combine heterogeneous results meaningfully — is a key research area.
+  </div>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION 10-15: Query Specification
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">10</div>
+    <h2>Query Specification</h2>
+  </div>
+  <div class="def-card">
+    <p>To formulate a query, a user must <strong>select collections</strong> and <strong>specify terms</strong>. Five interaction styles exist: command language, form filling, menu selection, direct manipulation, and natural language.</p>
+  </div>
+
+  <!-- Boolean Queries -->
+  <div class="sub-heading">10. Boolean Queries</div>
+  <div class="info-box red">
+    <div class="box-title">❌ Problems with Boolean Queries</div>
+    <ul class="bullet-list" style="margin:0">
+      <li>Most users find the syntax counter-intuitive — many misinterpret AND/OR.</li>
+      <li>English AND ("dogs and cats") ≠ Boolean AND (documents about BOTH dogs AND cats together).</li>
+      <li>No ranking — documents either match or they don't. No measure of "how well" they match.</li>
+      <li>Complex syntax (parentheses, operator precedence) overwhelms casual users.</li>
+    </ul>
+  </div>
+  <p>Web solutions: allow users to choose "all words" (AND) or "any words" (OR) without explicit Boolean operators. The '+' prefix (Altavista) was widely adopted but often misunderstood.</p>
+
+  <div class="sub-heading">11. From Command Lines to Forms and Menus</div>
+  <p>TTY command-line interfaces required users to type cryptic commands and remember syntax (e.g., <code>FIND PA darwin AND TW species</code>). </p>
+  <p>The Web-based Melvyl system improved on this with <strong>form filling</strong> and <strong>menu selection</strong>: users select metadata types from listboxes and don't need to remember attribute names. It also retains context between searches.</p>
+
+  <!-- Image: Melvyl -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.9</strong> (Melvyl Web query interface) in the original PDF. Illustration below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 520 200" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="520" height="200" fill="#f8fafc" rx="8"/>
+      <rect x="20" y="20" width="480" height="160" rx="8" fill="white" stroke="#cbd5e1" stroke-width="1.5"/>
+      <rect x="20" y="20" width="480" height="28" rx="8" fill="#2563eb"/>
+      <text x="260" y="39" text-anchor="middle" font-size="12" fill="white" font-weight="600">Melvyl Web-Based Bibliographic Catalog — Query Interface</text>
+      <!-- Form fields -->
+      <text x="36" y="70" font-size="11" fill="#475569">Search type:</text>
+      <rect x="110" y="58" width="120" height="20" rx="3" fill="#f1f5f9" stroke="#cbd5e1"/>
+      <text x="170" y="72" text-anchor="middle" font-size="10" fill="#334155">Keyword ▾</text>
+      <text x="36" y="100" font-size="11" fill="#475569">Keywords:</text>
+      <rect x="110" y="88" width="280" height="22" rx="3" fill="#f1f5f9" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="120" y="103" font-size="10" fill="#94a3b8">Enter keywords here…</text>
+      <text x="36" y="128" font-size="11" fill="#475569">Document type:</text>
+      <rect x="130" y="116" width="80" height="18" rx="3" fill="#f1f5f9" stroke="#cbd5e1"/>
+      <text x="170" y="129" text-anchor="middle" font-size="10" fill="#334155">Any ▾</text>
+      <rect x="220" y="116" width="50" height="18" rx="3" fill="#f1f5f9" stroke="#cbd5e1"/>
+      <text x="245" y="129" text-anchor="middle" font-size="10" fill="#334155">AND ▾</text>
+      <rect x="400" y="110" width="80" height="26" rx="5" fill="#2563eb"/>
+      <text x="440" y="127" text-anchor="middle" font-size="11" fill="white" font-weight="600">Search</text>
+      <text x="36" y="160" font-size="10" fill="#64748b">Previous queries: [Query 1] [Query 2] — click to modify and re-execute</text>
+      <text x="260" y="188" text-anchor="middle" font-size="11" fill="#64748b" font-style="italic">Figure 10.9: Web-based Melvyl catalog query interface (simplified illustration)</text>
+    </svg>
+    <figcaption>Figure 10.9 — Web-based Melvyl bibliographic catalog. Form-filling and menus replace cryptic command-line syntax. Copyright ©1998, The Regents of the University of California.</figcaption>
+  </div>
+
+  <div class="sub-heading">12. Faceted Queries</div>
+  <div class="def-card">
+    <p>A <strong>faceted query</strong> divides the user's query into <em>topics/facets</em>, each of which should be present in retrieved documents. This approach helps when pure Boolean queries return too many or zero results.</p>
+  </div>
+  <div class="info-box green">
+    <div class="box-title">✅ Example</div>
+    A query on "drugs for prevention of osteoporosis" is divided into facets:<br/>
+    <code>(osteoporosis OR "bone loss") AND (drugs OR pharmaceuticals) AND (prevention OR cure)</code>
+  </div>
+  <p><strong>Quorum Ranking</strong>: ranks documents by how many facets they satisfy. A document with hits on 3 out of 4 facets is ranked higher than one with 30 hits on just 1 facet.</p>
+
+  <div class="sub-heading">13. Graphical Approaches to Query Specification</div>
+  <p><strong>Direct manipulation interfaces</strong> provide alternatives to command-line syntax. Properties: (1) continuous representation of the object of interest, (2) physical actions instead of complex syntax, (3) rapid, reversible operations with immediate visible impact.</p>
+  <ul class="bullet-list">
+    <li><strong>Venn Diagram / VQuery:</strong> Overlapping ovals represent ANDs; selecting outside overlap = OR; unselected oval in active area = NOT. Limited to ~3 terms in standard Venn format.</li>
+    <li><strong>Filter-Flow Model (Young &amp; Shneiderman):</strong> User selects attribute values; placing attributes in sequence = AND (conjunction); in parallel = OR (disjunction). Width of "water flow" shows how many documents pass through.</li>
+    <li><strong>Block-Oriented Diagram (Anick et al.):</strong> Natural language query broken into blocks in rows/columns. Same row = AND; same column = OR. Users activate/deactivate blocks to rapidly experiment with combinations.</li>
+    <li><strong>Magic Lenses (Fishkin &amp; Stone):</strong> Transparent lenses act as filters on a 2D document space. Stacking lenses combines conditions as a conjunction.</li>
+  </ul>
+
+  <!-- Image: Filter Flow -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.11</strong> (Filter-Flow visualization) and <strong>Figure 10.12</strong> (Block-oriented diagram) in the original PDF. Illustration below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 520 180" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="520" height="180" fill="#f8fafc" rx="8"/>
+      <text x="260" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">Filter-Flow Model (Boolean Query)</text>
+      <!-- Source flow -->
+      <rect x="20" y="50" width="70" height="90" rx="6" fill="#dbeafe" stroke="#2563eb"/>
+      <text x="55" y="75" text-anchor="middle" font-size="10" font-weight="600" fill="#1e3a8a">Attributes</text>
+      <text x="55" y="90" text-anchor="middle" font-size="9" fill="#475569">Author</text>
+      <text x="55" y="103" text-anchor="middle" font-size="9" fill="#475569">Date</text>
+      <text x="55" y="116" text-anchor="middle" font-size="9" fill="#475569">Topic</text>
+      <!-- Wide arrow (lots of docs) -->
+      <rect x="100" y="70" width="60" height="40" rx="4" fill="#93c5fd" opacity="0.7"/>
+      <text x="130" y="93" text-anchor="middle" font-size="9" fill="#1e3a8a">All docs</text>
+      <!-- Filter 1 -->
+      <rect x="170" y="65" width="70" height="50" rx="6" fill="#ede9fe" stroke="#7c3aed"/>
+      <text x="205" y="84" text-anchor="middle" font-size="9" font-weight="600" fill="#4c1d95">Filter 1</text>
+      <text x="205" y="97" text-anchor="middle" font-size="9" fill="#475569">Topic=AI</text>
+      <text x="205" y="109" text-anchor="middle" font-size="9" fill="#475569">(narrows)</text>
+      <!-- Medium arrow -->
+      <rect x="250" y="76" width="45" height="28" rx="4" fill="#c4b5fd" opacity="0.7"/>
+      <text x="273" y="93" text-anchor="middle" font-size="9" fill="#4c1d95">Subset</text>
+      <!-- Filter 2 -->
+      <rect x="305" y="65" width="70" height="50" rx="6" fill="#d1fae5" stroke="#059669"/>
+      <text x="340" y="84" text-anchor="middle" font-size="9" font-weight="600" fill="#064e3b">Filter 2</text>
+      <text x="340" y="97" text-anchor="middle" font-size="9" fill="#475569">Date=2020</text>
+      <text x="340" y="109" text-anchor="middle" font-size="9" fill="#475569">(narrows)</text>
+      <!-- Thin arrow -->
+      <rect x="385" y="81" width="30" height="18" rx="4" fill="#6ee7b7" opacity="0.7"/>
+      <text x="400" y="93" text-anchor="middle" font-size="9" fill="#064e3b">Final</text>
+      <!-- Result -->
+      <rect x="425" y="70" width="70" height="50" rx="6" fill="#fef3c7" stroke="#d97706"/>
+      <text x="460" y="90" text-anchor="middle" font-size="10" font-weight="600" fill="#78350f">Results</text>
+      <text x="460" y="105" text-anchor="middle" font-size="9" fill="#475569">Ranked list</text>
+      <!-- Label -->
+      <text x="130" y="148" text-anchor="middle" font-size="9" fill="#64748b">Wide flow = many docs</text>
+      <text x="340" y="148" text-anchor="middle" font-size="9" fill="#64748b">Narrow flow = filtered docs</text>
+      <text x="260" y="168" text-anchor="middle" font-size="11" fill="#64748b" font-style="italic">Figure 10.11: Filter-Flow visualization for Boolean query specification</text>
+    </svg>
+    <figcaption>Figure 10.11 — Filter-Flow model. Width of flow = number of documents matching at each stage. Conjunctions (AND) reduce the flow; disjunctions (OR) widen it.</figcaption>
+  </div>
+
+  <!-- Image: Magic Lens -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.13</strong> (Magic Lens interface) in the original PDF. Illustration below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 500 200" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="500" height="200" fill="#f8fafc" rx="8"/>
+      <text x="250" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">Magic Lens Interface for Query Specification</text>
+      <!-- Doc icons scattered -->
+      <g fill="#cbd5e1">
+        <rect x="30" y="50" width="20" height="26" rx="2"/><text x="40" y="67" text-anchor="middle" font-size="8" fill="#64748b">d1</text>
+        <rect x="60" y="80" width="20" height="26" rx="2"/><text x="70" y="97" text-anchor="middle" font-size="8" fill="#64748b">d2</text>
+        <rect x="90" y="55" width="20" height="26" rx="2"/><text x="100" y="72" text-anchor="middle" font-size="8" fill="#64748b">d3</text>
+        <rect x="120" y="90" width="20" height="26" rx="2"/><text x="130" y="107" text-anchor="middle" font-size="8" fill="#64748b">d4</text>
+        <rect x="150" y="60" width="20" height="26" rx="2"/><text x="160" y="77" text-anchor="middle" font-size="8" fill="#64748b">d5</text>
+        <rect x="190" y="50" width="20" height="26" rx="2"/><text x="200" y="67" text-anchor="middle" font-size="8" fill="#64748b">d6</text>
+        <rect x="220" y="80" width="20" height="26" rx="2"/><text x="230" y="97" text-anchor="middle" font-size="8" fill="#64748b">d7</text>
+      </g>
+      <!-- Lens 1 -->
+      <ellipse cx="120" cy="90" rx="70" ry="55" fill="#dbeafe" fill-opacity="0.45" stroke="#2563eb" stroke-width="2" stroke-dasharray="5,3"/>
+      <text x="120" y="155" text-anchor="middle" font-size="10" fill="#1e3a8a">Lens 1: "climate"</text>
+      <!-- Lens 2 (overlapping) -->
+      <ellipse cx="200" cy="85" rx="65" ry="50" fill="#ede9fe" fill-opacity="0.4" stroke="#7c3aed" stroke-width="2" stroke-dasharray="5,3"/>
+      <text x="215" y="145" text-anchor="middle" font-size="10" fill="#4c1d95">Lens 2: "policy"</text>
+      <!-- Intersection label -->
+      <text x="165" y="80" text-anchor="middle" font-size="9" fill="#059669" font-weight="600">AND</text>
+      <!-- Visible docs inside -->
+      <rect x="150" y="60" width="20" height="26" rx="2" fill="#4ade80" fill-opacity="0.6"/><text x="160" y="77" text-anchor="middle" font-size="8" fill="#064e3b">d5✓</text>
+      <rect x="190" y="50" width="20" height="26" rx="2" fill="#4ade80" fill-opacity="0.6"/><text x="200" y="67" text-anchor="middle" font-size="8" fill="#064e3b">d6✓</text>
+      <!-- Legend -->
+      <text x="340" y="65" font-size="11" font-weight="600" fill="#1e293b">How it works:</text>
+      <text x="340" y="82" font-size="10" fill="#475569">Each lens = a word filter.</text>
+      <text x="340" y="96" font-size="10" fill="#475569">Docs not containing the word</text>
+      <text x="340" y="110" font-size="10" fill="#475569">disappear under that lens.</text>
+      <text x="340" y="126" font-size="10" fill="#475569">Overlapping lenses = AND.</text>
+      <text x="340" y="140" font-size="10" fill="#475569">Green docs = match both lenses.</text>
+      <text x="250" y="188" text-anchor="middle" font-size="11" fill="#64748b" font-style="italic">Figure 10.13: Magic lens interface for query specification (Fishkin &amp; Stone)</text>
+    </svg>
+    <figcaption>Figure 10.13 — Magic Lenses filter documents in a 2D space. Overlapping lenses act as conjunction (AND).</figcaption>
+  </div>
+
+  <div class="sub-heading">14. Phrases and Proximity</div>
+  <p>Proximity information significantly improves precision. Different methods for specifying phrases:</p>
+  <ul class="bullet-list">
+    <li><strong>LEXIS-NEXIS:</strong> <code>white w/3 house</code> = "white" within 3 words of "house".</li>
+    <li><strong>Web search engines:</strong> Enclose terms in <strong>quotation marks</strong> for exact phrase match.</li>
+    <li><strong>Limitation:</strong> Exact phrase matching misses near-matches (e.g., "President Abraham Lincoln" won't be caught by "president lincoln").</li>
+    <li><strong>Best approach:</strong> Allow exact phrases but treat them as small proximity ranges with exponential fall-off in weight.</li>
+  </ul>
+
+  <div class="sub-heading">15. Natural Language and Free Text Queries</div>
+  <ul class="bullet-list">
+    <li>Statistical ranking allows users to query naturally without Boolean operators.</li>
+    <li><strong>Drawback:</strong> Users get little feedback about <em>why</em> a document ranked the way it did.</li>
+    <li><strong>Mandatory terms:</strong> Some systems let users mark certain terms as required within a natural language query.</li>
+    <li><strong>NLP parsing:</strong> Some systems parse the query's syntax to extract concepts (e.g., Murax extracts whether the user is asking for a person, place, or date).</li>
+    <li><strong>Question Answering systems:</strong> Ask Jeeves maps user queries to question templates linked to curated web pages. FAQ Finder matches queries to FAQ question-answer pairs.</li>
+  </ul>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION 16: Document Surrogates
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">16</div>
+    <h2>Document Surrogates</h2>
+  </div>
+  <div class="def-card">
+    <p>A <strong>document surrogate</strong> is a brief representation of a document — typically title, source, date, length, and a relevance score — used to display results lists without showing the full document.</p>
+  </div>
+  <ul class="bullet-list">
+    <li>Some systems offer <strong>short view</strong> (just title + metadata) and <strong>detailed view</strong> (abstract or excerpt).</li>
+    <li>Clicking the title brings up the full document.</li>
+    <li>Web search engines generate excerpts automatically (usually first few lines of the page).</li>
+  </ul>
+
+  <!-- Image: Figure 10.14 -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.14</strong> (Ranked list of titles and document surrogate information) in the original PDF. Illustration below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 520 220" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="520" height="220" fill="#f8fafc" rx="8"/>
+      <text x="260" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">Document Surrogate — Ranked Results List</text>
+      <!-- Header bar -->
+      <rect x="20" y="32" width="480" height="24" rx="4" fill="#2563eb"/>
+      <text x="30" y="49" font-size="11" fill="white" font-weight="600">Rank</text>
+      <text x="80" y="49" font-size="11" fill="white" font-weight="600">Title</text>
+      <text x="340" y="49" font-size="11" fill="white" font-weight="600">Score</text>
+      <text x="400" y="49" font-size="11" fill="white" font-weight="600">Date</text>
+      <text x="460" y="49" font-size="11" fill="white" font-weight="600">Source</text>
+      <!-- Row 1 -->
+      <rect x="20" y="56" width="480" height="32" rx="0" fill="white"/>
+      <text x="30" y="76" font-size="11" fill="#2563eb">1.</text>
+      <text x="80" y="70" font-size="11" fill="#2563eb" text-decoration="underline">Osteoporosis Prevention in Elderly Women</text>
+      <text x="80" y="83" font-size="9" fill="#64748b">Abstract: This study examines drug therapies for preventing bone loss…</text>
+      <text x="340" y="76" font-size="11" fill="#059669">0.94</text>
+      <text x="400" y="76" font-size="10" fill="#475569">2003</text>
+      <text x="460" y="76" font-size="10" fill="#475569">JAMA</text>
+      <!-- Row 2 -->
+      <rect x="20" y="88" width="480" height="32" rx="0" fill="#f8fafc"/>
+      <text x="30" y="108" font-size="11" fill="#2563eb">2.</text>
+      <text x="80" y="102" font-size="11" fill="#2563eb" text-decoration="underline">Pharmaceutical Approaches to Bone Density</text>
+      <text x="80" y="115" font-size="9" fill="#64748b">Abstract: A review of pharmaceutical interventions for osteoporosis…</text>
+      <text x="340" y="108" font-size="11" fill="#059669">0.87</text>
+      <text x="400" y="108" font-size="10" fill="#475569">2001</text>
+      <text x="460" y="108" font-size="10" fill="#475569">NEJM</text>
+      <!-- Row 3 -->
+      <rect x="20" y="120" width="480" height="32" rx="0" fill="white"/>
+      <text x="30" y="140" font-size="11" fill="#2563eb">3.</text>
+      <text x="80" y="134" font-size="11" fill="#2563eb" text-decoration="underline">Calcium and Vitamin D: Role in Osteoporosis</text>
+      <text x="80" y="147" font-size="9" fill="#64748b">Abstract: Nutritional supplements as prevention strategy for…</text>
+      <text x="340" y="140" font-size="11" fill="#d97706">0.74</text>
+      <text x="400" y="140" font-size="10" fill="#475569">2002</text>
+      <text x="460" y="140" font-size="10" fill="#475569">Lancet</text>
+      <!-- Row 4 -->
+      <rect x="20" y="152" width="480" height="32" rx="0" fill="#f8fafc"/>
+      <text x="30" y="172" font-size="11" fill="#2563eb">4.</text>
+      <text x="80" y="166" font-size="11" fill="#2563eb" text-decoration="underline">Bone Loss in Postmenopausal Patients</text>
+      <text x="80" y="179" font-size="9" fill="#64748b">Abstract: Longitudinal study of bone mineral density changes…</text>
+      <text x="340" y="172" font-size="11" fill="#dc2626">0.61</text>
+      <text x="400" y="172" font-size="10" fill="#475569">1999</text>
+      <text x="460" y="172" font-size="10" fill="#475569">BMJ</text>
+      <text x="260" y="205" text-anchor="middle" font-size="11" fill="#64748b" font-style="italic">Figure 10.14: Ranked list of titles and document surrogate information</text>
+    </svg>
+    <figcaption>Figure 10.14 — Example of a ranked results list with document surrogates (title, abstract snippet, relevance score, date, source).</figcaption>
+  </div>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION 17: Query Term Hits / KWIC / TileBars / SeeSoft
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">17</div>
+    <h2>Query Term Hits Within Document Content</h2>
+  </div>
+
+  <div class="def-card">
+    <p>Highlighting query term occurrences within retrieved documents helps users quickly find the most relevant passages. Color highlighting and auto-scrolling to the first match are common techniques found to be consistently useful.</p>
+  </div>
+
+  <div class="sub-sub-heading">KWIC (Keyword-In-Context)</div>
+  <p>Extracts <strong>sentence fragments</strong> containing the query terms and shows them as part of the document surrogate. Unlike an abstract (which summarises the document), KWIC shows <em>how the query terms are used in context</em>.</p>
+  <ul class="bullet-list">
+    <li>Shows which subsets of query terms occur and in what context.</li>
+    <li>Best fragments: near the beginning of the document AND containing the largest subset of query terms.</li>
+    <li>Not commonly shown in web search (engines don't usually store position information).</li>
+  </ul>
+
+  <div class="sub-sub-heading">TileBars</div>
+
+  <!-- Image: Figure 10.15 - TileBars -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.15</strong> (TileBars retrieval results visualization) in the original PDF. Illustration below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 520 250" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="520" height="250" fill="#f8fafc" rx="8"/>
+      <text x="260" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">TileBars Visualization</text>
+      <!-- Legend -->
+      <rect x="30" y="32" width="14" height="14" fill="#1e293b"/><text x="50" y="44" font-size="10" fill="#475569">Dark = many hits on this topic in passage</text>
+      <rect x="220" y="32" width="14" height="14" fill="#94a3b8"/><text x="240" y="44" font-size="10" fill="#475569">Light = few hits</text>
+      <rect x="340" y="32" width="14" height="14" fill="white" stroke="#94a3b8"/><text x="360" y="44" font-size="10" fill="#475569">White = no hits</text>
+
+      <!-- Column labels -->
+      <text x="200" y="62" font-size="10" fill="#64748b" text-anchor="middle">← Passage 1 →</text>
+      <text x="280" y="62" font-size="10" fill="#64748b" text-anchor="middle">← Passage 2 →</text>
+      <text x="360" y="62" font-size="10" fill="#64748b" text-anchor="middle">← Passage 3 →</text>
+
+      <!-- Query Facet Labels -->
+      <text x="80" y="85" font-size="10" fill="#1e3a8a" font-weight="600" text-anchor="middle">osteoporosis</text>
+      <text x="80" y="115" font-size="10" fill="#4c1d95" font-weight="600" text-anchor="middle">prevention</text>
+      <text x="80" y="145" font-size="10" fill="#064e3b" font-weight="600" text-anchor="middle">research</text>
+
+      <!-- Doc 1 TileBar -->
+      <text x="160" y="80" font-size="10" fill="#334155">Doc 1: [Osteoporosis Drug Study...]</text>
+      <!-- Row 1 (osteoporosis) -->
+      <rect x="160" y="85" width="40" height="16" fill="white" stroke="#94a3b8"/>
+      <rect x="200" y="85" width="40" height="16" fill="#1e293b"/>
+      <rect x="240" y="85" width="40" height="16" fill="#64748b"/>
+      <!-- Row 2 (prevention) -->
+      <rect x="160" y="101" width="40" height="16" fill="white" stroke="#94a3b8"/>
+      <rect x="200" y="101" width="40" height="16" fill="#475569"/>
+      <rect x="240" y="101" width="40" height="16" fill="#1e293b"/>
+      <!-- Row 3 (research) -->
+      <rect x="160" y="117" width="40" height="16" fill="#94a3b8"/>
+      <rect x="200" y="117" width="40" height="16" fill="#1e293b"/>
+      <rect x="240" y="117" width="40" height="16" fill="#475569"/>
+
+      <!-- Doc 2 TileBar (short, highly relevant) -->
+      <text x="310" y="80" font-size="10" fill="#334155">Doc 2: [Prevention of Bone Loss...]</text>
+      <rect x="310" y="85" width="30" height="16" fill="#1e293b"/>
+      <rect x="310" y="101" width="30" height="16" fill="#1e293b"/>
+      <rect x="310" y="117" width="30" height="16" fill="#1e293b"/>
+
+      <!-- Doc 3 TileBar (long, misses osteoporosis) -->
+      <text x="160" y="160" font-size="10" fill="#334155">Doc 3: [General Cancer Research...]</text>
+      <rect x="160" y="165" width="40" height="16" fill="white" stroke="#94a3b8"/>
+      <rect x="200" y="165" width="40" height="16" fill="white" stroke="#94a3b8"/>
+      <rect x="240" y="165" width="40" height="16" fill="white" stroke="#94a3b8"/>
+      <rect x="280" y="165" width="40" height="16" fill="white" stroke="#94a3b8"/>
+      <rect x="160" y="181" width="40" height="16" fill="#475569"/>
+      <rect x="200" y="181" width="40" height="16" fill="#94a3b8"/>
+      <rect x="240" y="181" width="40" height="16" fill="white" stroke="#94a3b8"/>
+      <rect x="280" y="181" width="40" height="16" fill="#64748b"/>
+      <rect x="160" y="197" width="40" height="16" fill="#1e293b"/>
+      <rect x="200" y="197" width="40" height="16" fill="#475569"/>
+      <rect x="240" y="197" width="40" height="16" fill="#94a3b8"/>
+      <rect x="280" y="197" width="40" height="16" fill="#1e293b"/>
+
+      <text x="260" y="235" text-anchor="middle" font-size="11" fill="#64748b" font-style="italic">Figure 10.15: TileBars — each row = a query facet; each column = a passage; darkness = hit frequency</text>
+    </svg>
+    <figcaption>Figure 10.15 — TileBars. Rows = query facets; columns = document passages; darkness = frequency of hits. Users can instantly see which documents discuss all topics vs. just one.</figcaption>
+  </div>
+
+  <ul class="bullet-list">
+    <li>User enters query in <strong>faceted format</strong> (one topic per line).</li>
+    <li>Each document shown with a rectangular bar: rows = facets, columns = passages.</li>
+    <li><strong>Darker square</strong> = more hits of that topic in that passage. <strong>White</strong> = no hits.</li>
+    <li>Overlap in the same passage = likely relevant document.</li>
+    <li>Allows users to scan graphic patterns instead of reading each document.</li>
+  </ul>
+
+  <div class="sub-sub-heading">SeeSoft</div>
+  <!-- Image: Figure 10.16 - SeeSoft -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.16</strong> (SeeSoft visualization) in the original PDF. Illustration below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 520 180" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="520" height="180" fill="#f8fafc" rx="8"/>
+      <text x="260" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">SeeSoft Visualization</text>
+      <!-- Columns of text lines (compact newspaper-style) -->
+      <!-- Column 1 -->
+      <g>
+        <rect x="30" y="32" width="90" height="120" rx="4" fill="white" stroke="#e2e8f0"/>
+        <!-- Lines of text -->
+        <rect x="34" y="36" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="41" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="46" width="82" height="3" rx="1" fill="#4ade80"/> <!-- highlighted -->
+        <rect x="34" y="51" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="56" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="61" width="82" height="3" rx="1" fill="#4ade80"/>
+        <rect x="34" y="66" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="71" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="76" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="81" width="82" height="3" rx="1" fill="#fbbf24"/>
+        <rect x="34" y="86" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="91" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="96" width="82" height="3" rx="1" fill="#4ade80"/>
+        <rect x="34" y="101" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="106" width="82" height="3" rx="1" fill="#fbbf24"/>
+        <rect x="34" y="111" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="116" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="121" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="126" width="82" height="3" rx="1" fill="#4ade80"/>
+        <rect x="34" y="131" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="136" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="141" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="34" y="146" width="82" height="3" rx="1" fill="#fbbf24"/>
+      </g>
+      <!-- Column 2 -->
+      <g>
+        <rect x="130" y="32" width="90" height="120" rx="4" fill="white" stroke="#e2e8f0"/>
+        <rect x="134" y="36" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="134" y="41" width="82" height="3" rx="1" fill="#f87171"/>
+        <rect x="134" y="46" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="134" y="51" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="134" y="56" width="82" height="3" rx="1" fill="#4ade80"/>
+        <rect x="134" y="61" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="134" y="66" width="82" height="3" rx="1" fill="#f87171"/>
+        <rect x="134" y="71" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="134" y="76" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="134" y="81" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="134" y="86" width="82" height="3" rx="1" fill="#4ade80"/>
+        <rect x="134" y="91" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="134" y="96" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="134" y="101" width="82" height="3" rx="1" fill="#f87171"/>
+        <rect x="134" y="106" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="134" y="111" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="134" y="116" width="82" height="3" rx="1" fill="#4ade80"/>
+        <rect x="134" y="121" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="134" y="126" width="82" height="3" rx="1" fill="#cbd5e1"/>
+        <rect x="134" y="131" width="82" height="3" rx="1" fill="#f87171"/>
+      </g>
+      <!-- Legend -->
+      <text x="260" y="50" font-size="11" font-weight="600" fill="#1e293b">How SeeSoft Works:</text>
+      <text x="260" y="65" font-size="10" fill="#475569">Each horizontal "line" = one line of text in the document.</text>
+      <text x="260" y="80" font-size="10" fill="#475569">Color = attribute of that line:</text>
+      <rect x="260" y="90" width="10" height="10" fill="#4ade80"/><text x="276" y="99" font-size="10" fill="#475569">Character "Alice" appears</text>
+      <rect x="260" y="106" width="10" height="10" fill="#fbbf24"/><text x="276" y="115" font-size="10" fill="#475569">Recently modified line</text>
+      <rect x="260" y="122" width="10" height="10" fill="#f87171"/><text x="276" y="131" font-size="10" fill="#475569">Bible reference found</text>
+      <text x="260" y="148" font-size="10" fill="#475569">Pop-up window shows detail on hover.</text>
+      <text x="260" y="162" font-size="10" fill="#475569">Compact overview of entire document.</text>
+      <text x="260" y="172" font-size="10" fill="#64748b" font-style="italic">Figure 10.16: SeeSoft — compact text visualization with color highlighting</text>
+    </svg>
+    <figcaption>Figure 10.16 — SeeSoft. Each line of the "newspaper column" = one actual line of text. Color highlights where specific characters or query terms appear across the entire document.</figcaption>
+  </div>
+
+  <div class="sub-sub-heading">InfoCrystal</div>
+  <!-- Image: Figure 10.17 - InfoCrystal -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.17</strong> (InfoCrystal retrieval results display) in the original PDF. Illustration below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 520 220" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="520" height="220" fill="#f8fafc" rx="8"/>
+      <text x="260" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">InfoCrystal — Extended Venn Diagram</text>
+      <!-- Venn-like circles for A, B, C, D -->
+      <circle cx="180" cy="110" r="55" fill="#dbeafe" fill-opacity="0.5" stroke="#2563eb" stroke-width="1.5"/>
+      <circle cx="230" cy="90" r="55" fill="#ede9fe" fill-opacity="0.5" stroke="#7c3aed" stroke-width="1.5"/>
+      <circle cx="230" cy="135" r="55" fill="#d1fae5" fill-opacity="0.5" stroke="#059669" stroke-width="1.5"/>
+      <circle cx="280" cy="110" r="55" fill="#fef3c7" fill-opacity="0.5" stroke="#d97706" stroke-width="1.5"/>
+      <!-- Labels -->
+      <text x="140" y="115" font-size="13" font-weight="700" fill="#1e3a8a">A</text>
+      <text x="230" y="55" font-size="13" font-weight="700" fill="#4c1d95">B</text>
+      <text x="230" y="185" font-size="13" font-weight="700" fill="#064e3b">C</text>
+      <text x="320" y="115" font-size="13" font-weight="700" fill="#78350f">D</text>
+      <!-- Center intersection count -->
+      <text x="225" y="115" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b">◆ 1</text>
+      <!-- AB intersection -->
+      <text x="198" y="88" text-anchor="middle" font-size="10" fill="#334155">AB: 7</text>
+      <!-- ABD intersection -->
+      <text x="248" y="88" text-anchor="middle" font-size="10" fill="#334155">ABD: 12</text>
+      <!-- AC intersection -->
+      <text x="198" y="138" text-anchor="middle" font-size="10" fill="#334155">AC: 4</text>
+      <!-- BD intersection -->
+      <text x="270" y="88" text-anchor="middle" font-size="10" fill="#334155">BD: 9</text>
+      <!-- Legend -->
+      <text x="380" y="60" font-size="11" font-weight="600" fill="#1e293b">InfoCrystal:</text>
+      <text x="380" y="76" font-size="10" fill="#475569">Shows how many docs</text>
+      <text x="380" y="90" font-size="10" fill="#475569">contain each subset of</text>
+      <text x="380" y="104" font-size="10" fill="#475569">N query terms (A,B,C,D).</text>
+      <text x="380" y="120" font-size="10" fill="#475569">◆ center = docs with</text>
+      <text x="380" y="134" font-size="10" fill="#475569">ALL four keywords.</text>
+      <text x="380" y="150" font-size="10" fill="#475569">Avoids explicit AND/OR</text>
+      <text x="380" y="164" font-size="10" fill="#475569">specification by users.</text>
+      <text x="260" y="208" text-anchor="middle" font-size="11" fill="#64748b" font-style="italic">Figure 10.17: Sketch of the InfoCrystal display for 4 query keywords (A, B, C, D)</text>
+    </svg>
+    <figcaption>Figure 10.17 — InfoCrystal. An extended Venn diagram showing how many documents contain each possible combination of N query terms. Users see which subsets are actually represented in the collection.</figcaption>
+  </div>
+  <p>InfoCrystal shows how many documents contain each <strong>subset of query terms</strong>, extending the Venn diagram paradigm. It avoids the need to manually specify Boolean ANDs and ORs.</p>
+  <div class="info-box yellow">
+    <div class="box-title">⚠ Limitation</div>
+    InfoCrystal does not show <em>proximity</em> among terms or their <em>relative frequency</em> within documents. Beyond 4 terms, the interface becomes difficult to understand.
+  </div>
+
+  <div class="sub-sub-heading">VIBE and Lyberworld</div>
+  <!-- Image: Figure 10.18 - VIBE -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.18</strong> (VIBE retrieval results display) in the original PDF. Illustration below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 500 200" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="500" height="200" fill="#f8fafc" rx="8"/>
+      <text x="250" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">VIBE — Visual Information Browsing Environment</text>
+      <!-- Pentagon of query terms -->
+      <polygon points="250,45 350,120 315,165 185,165 150,120" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <!-- Query term vertices -->
+      <circle cx="250" cy="45" r="18" fill="#2563eb"/>
+      <text x="250" y="49" text-anchor="middle" font-size="9" fill="white" font-weight="600">T1</text>
+      <text x="250" y="32" text-anchor="middle" font-size="9" fill="#1e3a8a">"cancer"</text>
+
+      <circle cx="350" cy="120" r="18" fill="#7c3aed"/>
+      <text x="350" y="124" text-anchor="middle" font-size="9" fill="white" font-weight="600">T2</text>
+      <text x="380" y="120" text-anchor="middle" font-size="9" fill="#4c1d95">"drugs"</text>
+
+      <circle cx="315" cy="165" r="18" fill="#059669"/>
+      <text x="315" y="169" text-anchor="middle" font-size="9" fill="white" font-weight="600">T3</text>
+      <text x="315" y="183" text-anchor="middle" font-size="9" fill="#064e3b">"therapy"</text>
+
+      <circle cx="185" cy="165" r="18" fill="#d97706"/>
+      <text x="185" y="169" text-anchor="middle" font-size="9" fill="white" font-weight="600">T4</text>
+      <text x="185" y="183" text-anchor="middle" font-size="9" fill="#78350f">"biology"</text>
+
+      <circle cx="150" cy="120" r="18" fill="#dc2626"/>
+      <text x="150" y="124" text-anchor="middle" font-size="9" fill="white" font-weight="600">T5</text>
+      <text x="110" y="120" text-anchor="middle" font-size="9" fill="#7f1d1d">"research"</text>
+
+      <!-- Document icons positioned by term match -->
+      <circle cx="255" cy="95" r="7" fill="#fbbf24" opacity="0.9"/><text x="265" y="99" font-size="8" fill="#334155">d1(T1,T2)</text>
+      <circle cx="300" cy="130" r="7" fill="#fbbf24" opacity="0.9"/><text x="310" y="134" font-size="8" fill="#334155">d2(T2,T3)</text>
+      <circle cx="225" cy="140" r="7" fill="#fbbf24" opacity="0.9"/><text x="195" y="144" font-size="8" fill="#334155">d3(T4,T5)</text>
+      <circle cx="250" cy="110" r="7" fill="#ef4444" opacity="0.8"/><text x="260" y="114" font-size="8" fill="#7f1d1d">d4(all)</text>
+    </svg>
+    <figcaption>Figure 10.18 — VIBE. Query terms placed at polygon vertices. Document icons are positioned based on which subset of terms they contain — closer to vertices = more hits on those terms. Lyberworld extends this idea to 3D.</figcaption>
+  </div>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION: SuperBook / Categories for Results Context
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">18</div>
+    <h2>SuperBook: Context via Table of Contents</h2>
+  </div>
+  <div class="def-card">
+    <p>SuperBook uses a large document's <strong>Table of Contents (TOC)</strong> to display query results in context. The TOC is shown on the left; full text is on the right. A <em>focus-plus-context</em> mechanism dynamically expands the current section while compressing others.</p>
+  </div>
+  <ul class="bullet-list">
+    <li>After a query, sections with hits are made <strong>larger</strong>; others are compressed.</li>
+    <li>Query terms in chapter/section names are <strong>highlighted in reverse video</strong>.</li>
+    <li>User studies found SuperBook users were faster and more accurate than users of paper manuals or standard online systems.</li>
+    <li>Query term highlighting was found to be at least partially responsible for improvements.</li>
+  </ul>
+
+  <!-- Image: Figure 10.19 - SuperBook -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.19</strong> (SuperBook interface) in the original PDF. Illustration below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 520 210" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="520" height="210" fill="#f8fafc" rx="8"/>
+      <text x="260" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">SuperBook Interface Layout</text>
+      <!-- Left panel - TOC -->
+      <rect x="20" y="30" width="170" height="160" rx="5" fill="white" stroke="#e2e8f0"/>
+      <text x="105" y="46" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">Table of Contents</text>
+      <line x1="20" y1="50" x2="190" y2="50" stroke="#e2e8f0"/>
+      <!-- TOC entries with focus-plus-context -->
+      <rect x="24" y="54" width="162" height="14" rx="3" fill="#dbeafe"/><text x="106" y="65" text-anchor="middle" font-size="10" fill="#1e3a8a">▶ Ch.1 Introduction [3 hits]</text>
+      <rect x="24" y="70" width="162" height="28" rx="3" fill="#2563eb"/><text x="106" y="82" text-anchor="middle" font-size="10" fill="white" font-weight="600">▶ Ch.2 Methods [12 hits] ← focus</text>
+      <text x="106" y="94" text-anchor="middle" font-size="9" fill="#dbeafe">§2.1 Data Collection [4]</text>
+      <rect x="24" y="100" width="162" height="10" rx="3" fill="#f1f5f9"/><text x="106" y="108" text-anchor="middle" font-size="9" fill="#64748b">▶ Ch.3 Results [7 hits]</text>
+      <rect x="24" y="112" width="162" height="8" rx="3" fill="#f1f5f9"/><text x="106" y="119" text-anchor="middle" font-size="9" fill="#64748b">▶ Ch.4 Discussion [2 hits]</text>
+      <rect x="24" y="122" width="162" height="7" rx="3" fill="#f1f5f9"/><text x="106" y="128" text-anchor="middle" font-size="9" fill="#64748b">▶ Ch.5 Conclusion [0 hits]</text>
+      <!-- Query box -->
+      <rect x="24" y="152" width="162" height="20" rx="4" fill="#f8fafc" stroke="#2563eb"/>
+      <text x="106" y="165" text-anchor="middle" font-size="10" fill="#94a3b8">Enter query…</text>
+      <rect x="24" y="175" width="162" height="12" rx="3" fill="#f1f5f9"/><text x="106" y="184" text-anchor="middle" font-size="9" fill="#64748b">Related: "bone density" "treatment"</text>
+      <!-- Right panel - full text -->
+      <rect x="198" y="30" width="302" height="160" rx="5" fill="white" stroke="#e2e8f0"/>
+      <text x="349" y="45" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">Document Full Text — Ch.2.1</text>
+      <line x1="198" y1="50" x2="500" y2="50" stroke="#e2e8f0"/>
+      <text x="208" y="66" font-size="10" fill="#334155">This study examined the effects of calcium</text>
+      <text x="208" y="80" font-size="10" fill="#334155">supplementation on <tspan fill="white" font-weight="600"><rect/><!-- highlight --></tspan></text>
+      <rect x="335" y="70" width="85" height="13" rx="2" fill="#fef9c3"/>
+      <text x="378" y="81" text-anchor="middle" font-size="10" fill="#78350f" font-weight="600">bone density</text>
+      <text x="208" y="94" font-size="10" fill="#334155">in postmenopausal women. The treatment</text>
+      <text x="208" y="108" font-size="10" fill="#334155">protocol involved daily doses of 1200 mg.    </text>
+      <rect x="208" y="112" width="60" height="13" rx="2" fill="#fef9c3"/>
+      <text x="238" y="123" text-anchor="middle" font-size="10" fill="#78350f" font-weight="600">osteoporosis</text>
+      <text x="270" y="123" font-size="10" fill="#334155"> markers were tracked monthly.</text>
+      <text x="208" y="136" font-size="10" fill="#334155">Results indicated significant improvements…</text>
+      <text x="260" y="198" text-anchor="middle" font-size="11" fill="#64748b" font-style="italic">Figure 10.19: SuperBook — TOC (left) with focus-plus-context; full text (right) with highlighted query terms</text>
+    </svg>
+    <figcaption>Figure 10.19 — SuperBook interface. The TOC on the left expands sections with hits and compresses others. The full document on the right highlights query terms in reverse video/color.</figcaption>
+  </div>
+
+  <div class="sub-heading">Categories for Results Set Context</div>
+  <p>Category metadata can also help place query results in context (beyond just a TOC):</p>
+  <ul class="bullet-list">
+    <li><strong>CORE project:</strong> Extended SuperBook to 1000+ full-text chemistry articles, using a chemistry category hierarchy instead of a TOC.</li>
+    <li><strong>DynaCat system:</strong> Organises retrieved documents using pre-selected categories from MeSH, based on the query type (e.g., "Treatment-Adverse Effects").</li>
+    <li><strong>SONIA system:</strong> Combines unsupervised clustering + user adjustments + supervised categorisation for personalised organisation.</li>
+  </ul>
+
+  <!-- Image: Figure 10.20 - DynaCat -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.20</strong> (DynaCat interface for category labels / query types) in the original PDF. Illustration below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 520 200" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="520" height="200" fill="#f8fafc" rx="8"/>
+      <text x="260" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">DynaCat Interface — Query on "Breast Cancer Prevention"</text>
+      <!-- Top bar -->
+      <rect x="20" y="30" width="480" height="25" rx="4" fill="#2563eb"/>
+      <text x="260" y="47" text-anchor="middle" font-size="11" fill="white">Query: Breast Cancer Prevention &nbsp;|&nbsp; Found: 143 documents</text>
+      <!-- Left pane: Category hierarchy (TOC view) -->
+      <rect x="20" y="60" width="150" height="120" rx="5" fill="white" stroke="#e2e8f0"/>
+      <text x="95" y="75" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">Category Hierarchy</text>
+      <text x="30" y="90" font-size="9" fill="#2563eb">▶ Neoplasms (42)</text>
+      <text x="36" y="103" font-size="9" fill="#64748b">  ▶ Breast Neoplasms (28)</text>
+      <text x="42" y="116" font-size="9" fill="#334155">    Carcinoma (18)</text>
+      <text x="42" y="129" font-size="9" fill="#334155">    In Situ (10)</text>
+      <text x="30" y="142" font-size="9" fill="#2563eb">▶ Prevention (31)</text>
+      <text x="36" y="155" font-size="9" fill="#64748b">  Chemoprevention (20)</text>
+      <text x="36" y="168" font-size="9" fill="#64748b">  Diet (11)</text>
+      <!-- Right pane: Document list -->
+      <rect x="178" y="60" width="322" height="120" rx="5" fill="white" stroke="#e2e8f0"/>
+      <text x="339" y="75" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">Documents by Category</text>
+      <text x="188" y="90" font-size="9" fill="#475569">Breast Neoplasms &gt; Carcinoma:</text>
+      <text x="188" y="103" font-size="9" fill="#2563eb" text-decoration="underline">• Hormonal therapy for breast carcinoma (2003)</text>
+      <text x="188" y="116" font-size="9" fill="#2563eb" text-decoration="underline">• Tamoxifen in prevention of breast cancer (2002)</text>
+      <text x="188" y="129" font-size="9" fill="#475569">Prevention &gt; Chemoprevention:</text>
+      <text x="188" y="142" font-size="9" fill="#2563eb" text-decoration="underline">• BRCA1 mutation screening approaches (2001)</text>
+      <text x="188" y="155" font-size="9" fill="#2563eb" text-decoration="underline">• Diet and breast cancer risk meta-analysis (2004)</text>
+      <text x="260" y="190" text-anchor="middle" font-size="11" fill="#64748b" font-style="italic">Figure 10.20: DynaCat — 3-pane interface showing query, MeSH category hierarchy, and documents per category</text>
+    </svg>
+    <figcaption>Figure 10.20 — DynaCat. Three panes: top (query + count), left (category hierarchy), right (document titles per category). Organises results using pre-selected MeSH categories relevant to the query type.</figcaption>
+  </div>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION: Using Hyperlinks / Cha-Cha / Mapuccino / Tables / Relevance Feedback
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">19</div>
+    <h2>Using Hyperlinks to Organise Retrieval Results</h2>
+  </div>
+
+  <div class="sub-sub-heading">Cha-Cha: SuperBook on the Web</div>
+  <p>Cha-Cha extends SuperBook to large, heterogeneous <strong>intranet websites</strong>. It uses the site's existing link structure to create a meaningful hierarchy over the search results. Shows the shortest paths from the root page to each hit.</p>
+  <!-- Image: Figure 10.21 - Cha-Cha -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.21</strong> (Cha-Cha intranet search results in context) in the original PDF. Illustration below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 520 200" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="520" height="200" fill="#f8fafc" rx="8"/>
+      <text x="260" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">Cha-Cha — Intranet Search Results in Hierarchical Context</text>
+      <!-- Tree structure -->
+      <!-- Root -->
+      <rect x="220" y="35" width="80" height="22" rx="4" fill="#2563eb"/>
+      <text x="260" y="50" text-anchor="middle" font-size="10" fill="white" font-weight="600">UC Berkeley Home</text>
+      <!-- Level 2 -->
+      <line x1="200" y1="57" x2="140" y2="80" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="260" y1="57" x2="260" y2="80" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="320" y1="57" x2="380" y2="80" stroke="#94a3b8" stroke-width="1.5"/>
+      <rect x="80" y="80" width="110" height="20" rx="4" fill="#7c3aed"/>
+      <text x="135" y="94" text-anchor="middle" font-size="10" fill="white">Health Center</text>
+      <rect x="205" y="80" width="110" height="20" rx="4" fill="#64748b"/>
+      <text x="260" y="94" text-anchor="middle" font-size="10" fill="white">Admissions</text>
+      <rect x="335" y="80" width="110" height="20" rx="4" fill="#64748b"/>
+      <text x="390" y="94" text-anchor="middle" font-size="10" fill="white">Research</text>
+      <!-- Level 3: hits -->
+      <line x1="135" y1="100" x2="100" y2="125" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="135" y1="100" x2="170" y2="125" stroke="#94a3b8" stroke-width="1.5"/>
+      <rect x="40" y="125" width="115" height="20" rx="4" fill="#d1fae5" stroke="#059669"/>
+      <text x="98" y="139" text-anchor="middle" font-size="9" fill="#064e3b">Medical Services ★</text>
+      <rect x="115" y="125" width="115" height="20" rx="4" fill="#d1fae5" stroke="#059669"/>
+      <text x="173" y="139" text-anchor="middle" font-size="9" fill="#064e3b">Student Health ★</text>
+      <!-- Legend -->
+      <rect x="290" y="128" width="10" height="10" fill="#d1fae5" stroke="#059669"/>
+      <text x="306" y="137" font-size="9" fill="#475569">★ = Search hit for "medical center"</text>
+      <text x="290" y="155" font-size="9" fill="#475569">Cha-Cha shows <tspan font-weight="600">path from root → hit</tspan>.</text>
+      <text x="290" y="168" font-size="9" fill="#475569">Even if user searched "medical center",</text>
+      <text x="290" y="181" font-size="9" fill="#475569">they see the "Health Center" parent context.</text>
+      <text x="260" y="198" text-anchor="middle" font-size="11" fill="#64748b" font-style="italic">Figure 10.21: Cha-Cha — intranet search results in hierarchical site context</text>
+    </svg>
+    <figcaption>Figure 10.21 — Cha-Cha. The link structure of a large intranet is used to show search hits in their hierarchical context, so users understand where each result sits within the site.</figcaption>
+  </div>
+
+  <div class="sub-sub-heading">Mapuccino: Graphical Depiction of Link Structure</div>
+  <p>Mapuccino crawls a website in real-time and depicts the crawled subset as a <strong>nodes-and-links</strong> graph. Relevant pages found during crawl get higher weights on their outlinks. Shows link structure but not content.</p>
+  <!-- Image: Figure 10.22 - Mapuccino -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.22</strong> (Mapuccino web subset visualization) in the original PDF. Illustration below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 500 180" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="500" height="180" fill="#f8fafc" rx="8"/>
+      <text x="250" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">Mapuccino — Nodes-and-Links Web Subset View</text>
+      <!-- Nodes and links -->
+      <circle cx="160" cy="90" r="22" fill="#2563eb"/>
+      <text x="160" y="94" text-anchor="middle" font-size="9" fill="white" font-weight="600">Root</text>
+      <line x1="182" y1="80" x2="235" y2="60" stroke="#94a3b8" stroke-width="2"/>
+      <line x1="182" y1="100" x2="235" y2="120" stroke="#94a3b8" stroke-width="2"/>
+      <line x1="182" y1="90" x2="235" y2="90" stroke="#94a3b8" stroke-width="2"/>
+      <circle cx="250" cy="60" r="16" fill="#7c3aed" opacity="0.8"/>
+      <text x="250" y="64" text-anchor="middle" font-size="8" fill="white">Page A</text>
+      <circle cx="250" cy="90" r="16" fill="#059669" opacity="0.8"/>
+      <text x="250" y="94" text-anchor="middle" font-size="8" fill="white">Page B ★</text>
+      <circle cx="250" cy="120" r="16" fill="#64748b" opacity="0.7"/>
+      <text x="250" y="124" text-anchor="middle" font-size="8" fill="white">Page C</text>
+      <line x1="266" y1="90" x2="315" y2="70" stroke="#94a3b8" stroke-width="2"/>
+      <line x1="266" y1="90" x2="315" y2="110" stroke="#94a3b8" stroke-width="2"/>
+      <circle cx="330" cy="70" r="14" fill="#059669" opacity="0.8"/>
+      <text x="330" y="74" text-anchor="middle" font-size="8" fill="white">D ★</text>
+      <circle cx="330" cy="110" r="14" fill="#64748b" opacity="0.6"/>
+      <text x="330" y="114" text-anchor="middle" font-size="8" fill="white">E</text>
+      <!-- Legend -->
+      <circle cx="390" cy="80" r="8" fill="#059669"/><text x="405" y="84" font-size="9" fill="#475569">Relevant page (★)</text>
+      <circle cx="390" cy="100" r="8" fill="#64748b"/><text x="405" y="104" font-size="9" fill="#475569">Non-relevant page</text>
+      <text x="250" y="160" text-anchor="middle" font-size="11" fill="#64748b" font-style="italic">Figure 10.22: Mapuccino — web subset as nodes-and-links graph (Jacovi, Shaul &amp; Maarek)</text>
+    </svg>
+    <figcaption>Figure 10.22 — Mapuccino. The crawled subset of a website is shown as a graph. Green nodes = relevant pages. Structure is visible but not content.</figcaption>
+  </div>
+
+  <!-- Tables section -->
+  <div class="sub-heading">Tables</div>
+  <p>Tabular displays organise documents by metadata (author, date) on X and Y axes, using colour/size/shape for attributes.</p>
+  <!-- Image: Figure 10.23 - Envision -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.23</strong> (Envision tabular display) and <strong>Figure 10.24</strong> (TableLens visualization) in the original PDF. Illustrations below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 520 190" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="520" height="190" fill="#f8fafc" rx="8"/>
+      <text x="260" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">Envision Tabular Display / TableLens</text>
+      <!-- Envision -->
+      <text x="120" y="38" text-anchor="middle" font-size="11" font-weight="600" fill="#475569">Envision (metadata axes)</text>
+      <!-- X axis: Year -->
+      <text x="65" y="55" font-size="9" fill="#64748b">Author ↓ / Year →</text>
+      <text x="100" y="55" font-size="9" fill="#334155">1999</text>
+      <text x="135" y="55" font-size="9" fill="#334155">2001</text>
+      <text x="170" y="55" font-size="9" fill="#334155">2003</text>
+      <!-- Rows -->
+      <text x="60" y="72" font-size="9" fill="#334155" text-anchor="end">Smith</text>
+      <circle cx="100" cy="68" r="7" fill="#2563eb" opacity="0.7"/><text x="100" y="72" text-anchor="middle" font-size="7" fill="white">0.9</text>
+      <circle cx="170" cy="68" r="5" fill="#94a3b8" opacity="0.5"/>
+      <text x="60" y="92" font-size="9" fill="#334155" text-anchor="end">Jones</text>
+      <circle cx="135" cy="88" r="9" fill="#7c3aed" opacity="0.7"/><text x="135" y="92" text-anchor="middle" font-size="7" fill="white">conf</text>
+      <circle cx="170" cy="88" r="6" fill="#059669" opacity="0.6"/>
+      <text x="60" y="112" font-size="9" fill="#334155" text-anchor="end">Wang</text>
+      <circle cx="100" cy="108" r="5" fill="#d97706" opacity="0.6"/>
+      <circle cx="170" cy="108" r="8" fill="#2563eb" opacity="0.8"/><text x="170" y="112" text-anchor="middle" font-size="7" fill="white">0.85</text>
+      <text x="120" y="140" text-anchor="middle" font-size="9" fill="#64748b" font-style="italic">Size = relevance; Color = doc type</text>
+      <!-- Divider -->
+      <line x1="240" y1="35" x2="240" y2="165" stroke="#e2e8f0" stroke-width="1.5"/>
+      <!-- TableLens -->
+      <text x="375" y="38" text-anchor="middle" font-size="11" font-weight="600" fill="#475569">TableLens (focus-plus-context)</text>
+      <!-- Compressed rows -->
+      <rect x="255" y="48" width="240" height="2" rx="1" fill="#94a3b8"/>
+      <rect x="255" y="52" width="240" height="2" rx="1" fill="#94a3b8"/>
+      <rect x="255" y="56" width="240" height="2" rx="1" fill="#94a3b8"/>
+      <!-- Focus row (expanded) -->
+      <rect x="255" y="60" width="240" height="22" rx="2" fill="#dbeafe"/>
+      <text x="260" y="75" font-size="9" fill="#1e3a8a">Smith 2003 | Rank: 1 | Score: 0.94 | Type: Article</text>
+      <!-- More compressed rows -->
+      <rect x="255" y="84" width="240" height="2" rx="1" fill="#94a3b8"/>
+      <rect x="255" y="88" width="240" height="2" rx="1" fill="#94a3b8"/>
+      <rect x="255" y="92" width="240" height="2" rx="1" fill="#94a3b8"/>
+      <!-- 2nd focus row -->
+      <rect x="255" y="96" width="240" height="22" rx="2" fill="#ede9fe"/>
+      <text x="260" y="111" font-size="9" fill="#4c1d95">Wang 2003 | Rank: 2 | Score: 0.87 | Type: Review</text>
+      <rect x="255" y="120" width="240" height="2" rx="1" fill="#94a3b8"/>
+      <rect x="255" y="124" width="240" height="2" rx="1" fill="#94a3b8"/>
+      <rect x="255" y="128" width="240" height="2" rx="1" fill="#94a3b8"/>
+      <text x="375" y="148" text-anchor="middle" font-size="9" fill="#64748b" font-style="italic">Hundreds of rows fit via compression</text>
+      <text x="260" y="178" text-anchor="middle" font-size="11" fill="#64748b" font-style="italic">Figure 10.23 &amp; 10.24: Envision (left) and TableLens (right)</text>
+    </svg>
+    <figcaption>Figures 10.23 &amp; 10.24 — Left: Envision organises documents on X/Y metadata axes with icons showing relevance. Right: TableLens uses focus-plus-context to show hundreds of rows in a compact space.</figcaption>
+  </div>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION 20-22: Relevance Feedback
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">20</div>
+    <h2>Using Relevance Judgements</h2>
+  </div>
+  <div class="def-card">
+    <p><strong>Relevance feedback</strong>: the user selects documents that appear relevant; the system uses features from these to revise the query. The new query is re-executed. This is a proven effective technique for improving retrieval.</p>
+  </div>
+
+  <div class="sub-heading">18. Interfaces for Standard Relevance Feedback</div>
+  <ul class="bullet-list">
+    <li>Most common: a results list with <strong>checkboxes</strong> beside each title for marking relevant documents.</li>
+    <li>After marking, the system either <strong>automatically reweights</strong> the query, or generates a <strong>list of suggested terms</strong> for the user to select.</li>
+    <li>Web engines use "More like this" as a simpler one-click version.</li>
+    <li><strong>Incremental relevance feedback</strong> (Aalbersberg): works well given only <em>one</em> relevant document at a time.</li>
+  </ul>
+  <!-- Image: Figure 10.25 -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.25</strong> (Standard relevance feedback interface) in the original PDF.
+  </div>
+
+  <div class="sub-heading">19. Studies of User Interaction with Relevance Feedback</div>
+  <p>Koenemann and Belkin tested four conditions for user control during relevance feedback:</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Condition</th><th>Description</th><th>Outcome</th></tr>
+      <tr><td><strong>Control</strong></td><td>No relevance feedback — manual query reformulation only.</td><td>Baseline performance</td></tr>
+      <tr><td><strong>Opaque</strong></td><td>User selects relevant docs; sees revised rankings.</td><td>Better than control</td></tr>
+      <tr><td><strong>Transparent</strong></td><td>User sees which terms were added by the system.</td><td>Between control and penetrable</td></tr>
+      <tr><td><strong>Penetrable</strong></td><td>User chooses which suggested terms to add before re-execution.</td><td><strong>Best performance</strong> — fewest iterations (avg 5.8 vs 8.2 in control)</td></tr>
+    </table>
+  </div>
+  <div class="info-box green">
+    <div class="box-title">✅ Key Finding</div>
+    All conditions with relevance feedback outperformed the no-feedback control. Users with the most control (penetrable) achieved better results in fewer iterations.
+  </div>
+
+  <div class="sub-heading">20. Fetching Relevant Information in the Background</div>
+  <p>Semi-automated assistants / recommender agents monitor users' behavior over time to predict future needs.</p>
+  <ul class="bullet-list">
+    <li><strong>Kozierok &amp; Maes system:</strong> Predicts how users handle email and meetings by learning from past actions. Uses nearest-neighbours to suggest actions.</li>
+    <li><strong>Syskill and Webert:</strong> Learns a user profile from explicit relevance judgements of web pages browsed. Annotates links on new pages.</li>
+    <li><strong>Letizia:</strong> Monitors browsing behaviour and concurrently evaluates reachable links to suggest next moves. Uses implicit feedback only.</li>
+    <li><strong>Butterfly:</strong> Prefetches citation links from the paper the user is currently reading. Shows incrementally growing citation list with animation.</li>
+  </ul>
+
+  <div class="sub-heading">21. Group Relevance Judgements</div>
+  <p><strong>Social recommendation / collaborative filtering:</strong> Uses relevance judgements from many different users to rate information. Highly effective for rating items where <em>taste</em> matters (movies, music). More recent work combines group judgements with content information.</p>
+
+  <div class="sub-heading">22. Pseudo-Relevance Feedback</div>
+  <div class="def-card">
+    <p>The system simply assumes its <strong>top-ranked documents are relevant</strong> and uses them to augment the query — no user input required. Highly effective when the original query is long and precise.</p>
+  </div>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION: Interface Support for Search Process
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">21</div>
+    <h2>Interface Support for the Search Process</h2>
+  </div>
+
+  <div class="sub-heading">1. Interfaces for String Matching</div>
+  <p>The simplest search need: the "Find" operation — searches within the currently viewed document. Usually a simple string match (no ranking). Key issue: the result list should be cleared as soon as a new query is typed, to avoid misleading the user.</p>
+  <!-- Image: Figure 10.26 + 10.27 -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.26</strong> (Simple string matching interface) and <strong>Figure 10.27</strong> (String matching over a list) in the original PDF.
+  </div>
+
+  <div class="sub-heading">2. Window Management</div>
+  <p>Interface designers must decide how to lay out information within the interface:</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Layout Type</th><th>Advantages</th><th>Disadvantages</th></tr>
+      <tr><td><strong>Monolithic</strong></td><td>Designer controls layout; all info simultaneously visible; familiar positions</td><td>Works best fullscreen; limits number of views; hampers integration with other apps</td></tr>
+      <tr><td><strong>Tiled Windows</strong></td><td>All windows non-overlapping and visible</td><td>Fixed; less flexible arrangement</td></tr>
+      <tr><td><strong>Overlapping Windows</strong></td><td>Flexible; can show more than fits on screen</td><td>Can quickly become crowded and disorganized; context switching is hard</td></tr>
+    </table>
+  </div>
+  <p><strong>Workspace concept</strong> (Card et al.): grouping functionally related windows together matches users' goal structure better than individual windows.</p>
+
+  <div class="sub-heading">3. Example Systems</div>
+
+  <div class="sub-sub-heading">InfoGrid Layout</div>
+  <p>A monolithic layout for large displays. Left side: query forms + controls + holding area for saved docs. Centre: retrieval results (thumbnails or cluster views). Right: full document display + metadata. A graphical history area appears at the bottom right.</p>
+  <!-- Image: Figure 10.28 - Monolithic layouts -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.28</strong> (Diagrams of monolithic layouts) in the original PDF. Illustration below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 520 200" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="520" height="200" fill="#f8fafc" rx="8"/>
+      <text x="260" y="18" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">Monolithic Interface Layout (InfoGrid)</text>
+      <!-- Left Panel -->
+      <rect x="20" y="28" width="110" height="150" rx="5" fill="white" stroke="#e2e8f0"/>
+      <rect x="20" y="28" width="110" height="30" rx="5" fill="#2563eb"/>
+      <text x="75" y="47" text-anchor="middle" font-size="9" fill="white" font-weight="600">Search Params</text>
+      <rect x="25" y="62" width="100" height="12" rx="3" fill="#f1f5f9" stroke="#e2e8f0"/>
+      <text x="75" y="72" text-anchor="middle" font-size="8" fill="#64748b">Property Sheet</text>
+      <text x="75" y="90" text-anchor="middle" font-size="9" fill="#475569">⋮ Control</text>
+      <text x="75" y="103" text-anchor="middle" font-size="9" fill="#475569">Panel</text>
+      <rect x="25" y="145" width="100" height="28" rx="3" fill="#fef3c7" stroke="#d97706"/>
+      <text x="75" y="163" text-anchor="middle" font-size="8" fill="#78350f">Holding Area</text>
+      <!-- Centre Panel -->
+      <rect x="138" y="28" width="175" height="150" rx="5" fill="white" stroke="#e2e8f0"/>
+      <rect x="138" y="28" width="175" height="24" rx="5" fill="#7c3aed"/>
+      <text x="225" y="44" text-anchor="middle" font-size="9" fill="white" font-weight="600">Retrieval Results</text>
+      <!-- Thumbnail icons -->
+      <g>
+        <rect x="148" y="58" width="30" height="36" rx="3" fill="#dbeafe" stroke="#2563eb"/><text x="163" y="80" text-anchor="middle" font-size="8" fill="#1e3a8a">Doc</text>
+        <rect x="186" y="58" width="30" height="36" rx="3" fill="#dbeafe" stroke="#2563eb"/><text x="201" y="80" text-anchor="middle" font-size="8" fill="#1e3a8a">Doc</text>
+        <rect x="224" y="58" width="30" height="36" rx="3" fill="#dbeafe" stroke="#2563eb"/><text x="239" y="80" text-anchor="middle" font-size="8" fill="#1e3a8a">Doc</text>
+        <rect x="262" y="58" width="30" height="36" rx="3" fill="#dbeafe" stroke="#2563eb"/><text x="277" y="80" text-anchor="middle" font-size="8" fill="#1e3a8a">Doc</text>
+        <rect x="148" y="100" width="30" height="36" rx="3" fill="#ede9fe" stroke="#7c3aed"/>
+        <rect x="186" y="100" width="30" height="36" rx="3" fill="#ede9fe" stroke="#7c3aed"/>
+        <rect x="224" y="100" width="30" height="36" rx="3" fill="#d1fae5" stroke="#059669"/>
+        <rect x="262" y="100" width="30" height="36" rx="3" fill="#d1fae5" stroke="#059669"/>
+      </g>
+      <text x="225" y="160" text-anchor="middle" font-size="8" fill="#64748b">Thumbnail view / Cluster results</text>
+      <text x="225" y="170" text-anchor="middle" font-size="8" fill="#64748b">↓ Search history</text>
+      <!-- Right Panel -->
+      <rect x="321" y="28" width="179" height="150" rx="5" fill="white" stroke="#e2e8f0"/>
+      <rect x="321" y="28" width="179" height="24" rx="5" fill="#059669"/>
+      <text x="410" y="44" text-anchor="middle" font-size="9" fill="white" font-weight="600">Document View</text>
+      <rect x="330" y="56" width="162" height="16" rx="3" fill="#f1f5f9"/><text x="411" y="68" text-anchor="middle" font-size="8" fill="#64748b">Metadata: Author, Date, Source</text>
+      <rect x="330" y="76" width="162" height="85" rx="3" fill="#f8fafc" stroke="#e2e8f0"/>
+      <text x="411" y="110" text-anchor="middle" font-size="9" fill="#475569">Full Document Text</text>
+      <text x="411" y="124" text-anchor="middle" font-size="9" fill="#94a3b8">(scrollable)</text>
+      <rect x="330" y="165" width="162" height="10" rx="3" fill="#fef3c7"/><text x="411" y="174" text-anchor="middle" font-size="8" fill="#78350f">Graphical interaction history</text>
+      <text x="260" y="192" text-anchor="middle" font-size="11" fill="#64748b" font-style="italic">Figure 10.28: Monolithic layout for information access interfaces</text>
+    </svg>
+    <figcaption>Figure 10.28 — InfoGrid monolithic layout. Left: search controls and holding area. Centre: retrieval results as thumbnails. Right: selected document view and metadata.</figcaption>
+  </div>
+
+  <div class="sub-sub-heading">The DLITE Interface</div>
+  <p>DLITE splits functionality into <strong>control</strong> (graphical direct-manipulation with animation) and <strong>display</strong> (separate Web browser window).</p>
+  <ul class="bullet-list">
+    <li>Queries, sources, and result sets are graphical objects — dragged and dropped onto service icons.</li>
+    <li>A result set is shown as a <strong>circular pool</strong>; documents as icons around its perimeter.</li>
+    <li>Animation guides the user — illegal operations trigger a "shake-the-head-no" animation.</li>
+    <li>Supports <strong>workspaces</strong> ("workcenters") — different task contexts with dedicated source icons.</li>
+  </ul>
+  <!-- Image: Figure 10.29 -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.29</strong> (DLITE interface) in the original PDF.
+  </div>
+
+  <div class="sub-sub-heading">The SketchTrieve Interface</div>
+  <p>Treats information access as an <em>informal process</em>. Allows half-finished ideas and partly explored paths to be retained and recombined. Uses a <strong>canvas/workspace</strong> metaphor where retrieval results can be arranged side-by-side for comparison.</p>
+  <!-- Image: Figure 10.30 -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.30</strong> (SketchTrieve interface) in the original PDF.
+  </div>
+
+  <div class="sub-heading">4. Examples of Poor Use of Overlapping Windows</div>
+  <div class="info-box red">
+    <div class="box-title">❌ Bad Practice Example (LEXIS-NEXIS)</div>
+    The legacy LEXIS-NEXIS interface doesn't use window context when switching functions — viewing metadata causes the results list to disappear entirely instead of using a pop-up. Metadata is rendered in poorly formatted ASCII even though a graphical interface is available. Full text is shown in a tiny, non-expandable area.
+  </div>
+
+  <div class="sub-heading">5. Retaining Search History</div>
+  <p>Good UIs should show: available choices at the current point, prior moves made, short-term tactics, longer-term strategies, and allow annotations of choices and findings.</p>
+  <ul class="bullet-list">
+    <li>Simple history: a list of commands executed earlier.</li>
+    <li>Graphical history: tracks commands and results together.</li>
+    <li><strong>VISAGE system:</strong> Saves search states as miniatures in a "slide sorter" view — visual, easy to recognise.</li>
+  </ul>
+  <!-- Image: Figure 10.31 -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.31</strong> (VISAGE interaction history visualization) in the original PDF.
+  </div>
+
+  <div class="sub-heading">6. Integrating Scanning, Selection, and Querying</div>
+  <div class="info-box yellow">
+    <div class="box-title">⚠ Current Problem</div>
+    Most UIs don't support strategies or sequences of moves well. Even taking results from one query and using them as input to a later query is not well supported. Scanning, selection, and querying need to be better integrated.
+  </div>
+  <p><strong>Exceptions:</strong></p>
+  <ul class="bullet-list">
+    <li>Web-based Melvyl: allows modifying prior queries and re-executing them.</li>
+    <li>DLITE / Rooms: support workspace-based storage and reuse of prior state.</li>
+    <li><strong>Cat-a-Cone</strong>: tightly integrates category browsing and querying (see next section).</li>
+  </ul>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION: Cat-a-Cone
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">22</div>
+    <h2>Cat-a-Cone: Integrating Category and Text Scanning with Search</h2>
+  </div>
+  <div class="def-card">
+    <p>Cat-a-Cone integrates <strong>querying</strong> and <strong>browsing</strong> of very large category hierarchies with their associated text collections. Uses 3D + animation from the Information Visualizer.</p>
+  </div>
+  <p><strong>Key design choices:</strong></p>
+  <ul class="bullet-list">
+    <li><strong>Separation</strong> of category hierarchy representation from document representation — allows fluid interaction between browsing and search.</li>
+    <li>Retrieved documents stored in a <strong>3D book representation</strong> — user "riffles" pages to see corresponding changes in the category hierarchy.</li>
+    <li>Shows which parts of the category space reflect each retrieved document's semantics.</li>
+    <li>Supports <strong>relevance feedback</strong> by suggesting additional related categories.</li>
+  </ul>
+  <p><strong>Starting points:</strong></p>
+  <ul class="bullet-list">
+    <li>Type a category name → see which parts of the hierarchy match it.</li>
+    <li>Type a free text query → retrieve documents → open them in the book → see associated categories in hierarchy.</li>
+  </ul>
+  <!-- Image: Figure 10.33 and 10.34 - Cat-a-Cone -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.33</strong> (Cat-a-Cone interface for integrating category and text scanning) and <strong>Figure 10.34</strong> (Cat-a-Cone search over category labels) in the original PDF. Illustrations below:
+  </div>
+  <div class="svg-figure">
+    <svg viewBox="0 0 520 220" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+      <rect width="520" height="220" fill="#f8fafc" rx="8"/>
+      <text x="260" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">Cat-a-Cone — 3D Category Hierarchy + Document Book</text>
+      <!-- 3D category hierarchy (left) - cone-like tree -->
+      <text x="120" y="38" text-anchor="middle" font-size="11" font-weight="600" fill="#475569">Category Hierarchy (3D)</text>
+      <!-- Root -->
+      <ellipse cx="120" cy="58" rx="50" ry="10" fill="#2563eb" opacity="0.8"/>
+      <text x="120" y="62" text-anchor="middle" font-size="9" fill="white" font-weight="600">MeSH Root</text>
+      <!-- Level 2 -->
+      <line x1="80" y1="68" x2="55" y2="90" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="120" y1="68" x2="120" y2="90" stroke="#94a3b8" stroke-width="1.5"/>
+      <line x1="160" y1="68" x2="185" y2="90" stroke="#94a3b8" stroke-width="1.5"/>
+      <ellipse cx="55" cy="98" rx="35" ry="8" fill="#7c3aed" opacity="0.7"/>
+      <text x="55" y="101" text-anchor="middle" font-size="8" fill="white">Physics</text>
+      <ellipse cx="120" cy="98" rx="35" ry="8" fill="#059669" opacity="0.7"/>
+      <text x="120" y="101" text-anchor="middle" font-size="8" fill="white">Diseases</text>
+      <ellipse cx="185" cy="98" rx="35" ry="8" fill="#d97706" opacity="0.7"/>
+      <text x="185" y="101" text-anchor="middle" font-size="8" fill="white">Diagnostics</text>
+      <!-- Level 3 under Diseases -->
+      <line x1="100" y1="106" x2="85" y2="125" stroke="#94a3b8" stroke-width="1.2"/>
+      <line x1="130" y1="106" x2="145" y2="125" stroke="#94a3b8" stroke-width="1.2"/>
+      <ellipse cx="85" cy="133" rx="30" ry="7" fill="#059669" opacity="0.5"/>
+      <text x="85" y="136" text-anchor="middle" font-size="8" fill="white">Radiation ★</text>
+      <ellipse cx="145" cy="133" rx="30" ry="7" fill="#059669" opacity="0.5"/>
+      <text x="145" y="136" text-anchor="middle" font-size="8" fill="white">Cancer ★</text>
+      <!-- 3D Book (right) -->
+      <text x="380" y="38" text-anchor="middle" font-size="11" font-weight="600" fill="#475569">Document Book (3D)</text>
+      <!-- Book shape -->
+      <rect x="315" y="50" width="130" height="140" rx="4" fill="#f1f5f9" stroke="#e2e8f0"/>
+      <rect x="325" y="60" width="110" height="24" rx="3" fill="#dbeafe"/>
+      <text x="380" y="76" text-anchor="middle" font-size="9" fill="#1e3a8a" font-weight="600">Doc 1: Radiation &amp; Diseases</text>
+      <text x="380" y="90" text-anchor="middle" font-size="8" fill="#475569">Category: Diseases &gt; Radiation</text>
+      <rect x="325" y="96" width="110" height="24" rx="3" fill="#ede9fe"/>
+      <text x="380" y="112" text-anchor="middle" font-size="9" fill="#4c1d95" font-weight="600">Doc 2: Occupational Hazards</text>
+      <text x="380" y="126" text-anchor="middle" font-size="8" fill="#475569">Category: Physics &gt; Radiation</text>
+      <rect x="325" y="132" width="110" height="24" rx="3" fill="#d1fae5"/>
+      <text x="380" y="148" text-anchor="middle" font-size="9" fill="#064e3b" font-weight="600">Doc 3: Cancer Treatment</text>
+      <text x="380" y="162" text-anchor="middle" font-size="8" fill="#475569">Category: Diseases &gt; Cancer</text>
+      <rect x="325" y="158" width="110" height="18" rx="3" fill="#fef3c7"/>
+      <text x="380" y="171" text-anchor="middle" font-size="9" fill="#78350f" font-weight="600">Doc 4: Radiation Diagnostics</text>
+      <!-- Connection arrow -->
+      <path d="M220 100 Q270 100 310 100" stroke="#2563eb" stroke-width="2" fill="none" marker-end="url(#arrow2)"/>
+      <defs><marker id="arrow2" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#2563eb"/></marker></defs>
+      <text x="265" y="95" text-anchor="middle" font-size="9" fill="#2563eb">open doc →</text>
+      <text x="265" y="108" text-anchor="middle" font-size="9" fill="#64748b">→ hierarchy updates</text>
+      <text x="260" y="205" text-anchor="middle" font-size="11" fill="#64748b" font-style="italic">Figure 10.33: Cat-a-Cone — 3D category hierarchy (left) + document book (right). Opening a doc highlights its categories.</text>
+    </svg>
+    <figcaption>Figure 10.33 — Cat-a-Cone. The 3D category hierarchy (left) and document book (right) are linked — opening a document highlights the parts of the hierarchy corresponding to that document's categories.</figcaption>
+  </div>
+
+  <!-- Query History Melvyl -->
+  <div class="img-notice">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    📄 Refer to <strong>Figure 10.32</strong> (Query history revision in Melvyl Web catalog) in the original PDF.
+  </div>
+</div>
+
+<!-- ───────────────────────────────────────────────────────────────
+     SECTION: Trends and Research Issues
+──────────────────────────────────────────────────────────────────── -->
+<div class="section-block">
+  <div class="section-heading">
+    <div class="section-num">23</div>
+    <h2>Trends and Research Issues</h2>
+  </div>
+  <div class="def-card">
+    <p>Human-computer interaction is receiving increasing recognition in computer science. This chapter has shown how rapidly the field is evolving and how many open research questions remain.</p>
+  </div>
+
+  <p><strong>Key themes and open problems:</strong></p>
+  <ul class="bullet-list">
+    <li>Scanning, selection, and querying need to be <strong>better integrated</strong> in search interfaces.</li>
+    <li>Supporting multi-session strategies — carrying results from one search session into another — remains largely unsolved.</li>
+    <li>Interfaces need to support the full range of information access activities (search, analysis, synthesis) in an integrated way.</li>
+    <li>Workspace and history mechanisms need further development and integration with general search.</li>
+    <li>Flexibility is needed, but <em>within constraints</em> — unrestricted interaction can lead to erroneous or wasteful behaviour.</li>
+    <li>Visual representations (maps, clusters) show promise but are generally less effective than text-based representations for direct search tasks.</li>
+    <li>Cat-a-Cone demonstrates some key design decisions that address these challenges — hierarchical category display, first-class document representation, alphabetical searching, and relevance feedback through category suggestions.</li>
+  </ul>
+
+  <div class="info-box blue">
+    <div class="box-title">💡 Summary of Key Design Lessons</div>
+    <ul class="bullet-list" style="margin:0">
+      <li>Provide <strong>informative feedback</strong> at every stage of the search process.</li>
+      <li>Support <strong>both novice and expert</strong> users with scaffolded interfaces.</li>
+      <li>Reduce <strong>memory load</strong> through history, context retention, and browsable suggestions.</li>
+      <li>Integrate <strong>scanning, browsing, querying</strong> fluidly — output of one should feed the next.</li>
+      <li>Graphical tools like TileBars and InfoCrystal can help users <strong>visualise</strong> complex result sets.</li>
+      <li>Relevance feedback — especially when users have control (penetrable mode) — significantly improves results.</li>
+      <li>Workspace/history mechanisms help users maintain context across multi-session searches.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ════════════════════════════════════════════════════ -->
+<hr/>
+<p style="text-align:center; color:var(--text-muted); font-size:13px; padding-bottom:20px;">
+  📘 Structured Notes · Chapter 10: User Interfaces and Visualization · Unit V
+</p>
+
+</div><!-- /content -->
+</body>
+</html>

@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit IV – Parallel & Distributed IR | Structured Notes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+  :root {
+    --bg: #f5f6fa;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --blue: #2563eb;
+    --blue-light: #eff6ff;
+    --blue-mid: #bfdbfe;
+    --green: #059669;
+    --green-light: #ecfdf5;
+    --amber: #d97706;
+    --amber-light: #fffbeb;
+    --red: #dc2626;
+    --red-light: #fef2f2;
+    --purple: #7c3aed;
+    --purple-light: #f5f3ff;
+    --teal: #0891b2;
+    --teal-light: #ecfeff;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --section-1: #2563eb;
+    --section-2: #7c3aed;
+    --section-3: #059669;
+    --section-4: #d97706;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ─── HEADER ─── */
+  .page-header {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 36px 0 28px;
+    margin-bottom: 40px;
+  }
+  .page-header .container {
+    max-width: 900px;
+    margin: auto;
+    padding: 0 24px;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+  .breadcrumb .icon { font-size: 15px; }
+  .breadcrumb span { color: var(--text-secondary); }
+  .breadcrumb .sep { color: var(--text-muted); }
+  .page-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+
+  /* ─── MAIN CONTAINER ─── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ─── TOPICS CARD ─── */
+  .topics-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+  }
+  .topics-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .topics-label::before { content: "📋"; font-size: 13px; }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tag {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: default;
+  }
+  .tag-blue   { background: var(--blue-light);   color: var(--blue);   }
+  .tag-purple { background: var(--purple-light);  color: var(--purple); }
+  .tag-green  { background: var(--green-light);   color: var(--green);  }
+  .tag-amber  { background: var(--amber-light);   color: var(--amber);  }
+  .tag-teal   { background: var(--teal-light);    color: var(--teal);   }
+  .tag-red    { background: var(--red-light);     color: var(--red);    }
+
+  /* ─── SECTIONS ─── */
+  .section { margin-bottom: 56px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--border);
+  }
+  .section-num {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800; color: white; flex-shrink: 0;
+  }
+  .s1 .section-num { background: var(--section-1); }
+  .s2 .section-num { background: var(--section-2); }
+  .s3 .section-num { background: var(--section-3); }
+  .s4 .section-num { background: var(--section-4); }
+
+  .section-title {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+  }
+
+  /* ─── SUBSECTIONS ─── */
+  .subsection { margin-bottom: 30px; }
+  .subsection-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+    padding-left: 12px;
+    border-left: 3px solid var(--blue);
+  }
+  .s2 .subsection-title { border-left-color: var(--purple); }
+  .s3 .subsection-title { border-left-color: var(--green);  }
+  .s4 .subsection-title { border-left-color: var(--amber);  }
+
+  .subsubsection-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 16px 0 8px;
+  }
+
+  /* ─── DEFINITION CARD ─── */
+  .def-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .def-card p, .def-card li { color: var(--text-secondary); font-size: 14.5px; }
+  .def-card strong { color: var(--text-primary); }
+  .def-card em { font-style: italic; color: var(--blue); }
+
+  /* ─── HIGHLIGHT BOXES ─── */
+  .box {
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    border-left: 4px solid;
+    font-size: 14.5px;
+  }
+  .box-blue   { background: var(--blue-light);   border-color: var(--blue);   color: #1e40af; }
+  .box-green  { background: var(--green-light);  border-color: var(--green);  color: #065f46; }
+  .box-amber  { background: var(--amber-light);  border-color: var(--amber);  color: #92400e; }
+  .box-purple { background: var(--purple-light); border-color: var(--purple); color: #5b21b6; }
+  .box-teal   { background: var(--teal-light);   border-color: var(--teal);   color: #164e63; }
+  .box-red    { background: var(--red-light);    border-color: var(--red);    color: #991b1b; }
+
+  .box strong { font-weight: 700; display: block; margin-bottom: 4px; }
+
+  /* ─── KEY TERM ─── */
+  .key { font-weight: 700; color: var(--text-primary); }
+  .highlight { background: #fef9c3; border-radius: 3px; padding: 0 3px; }
+
+  /* ─── BULLET LISTS ─── */
+  .bullet-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 14px;
+  }
+  .bullet-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 5px 0;
+    font-size: 14.5px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .bullet-list li:last-child { border-bottom: none; }
+  .bullet-list li::before {
+    content: "●";
+    color: var(--blue);
+    font-size: 8px;
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+  .s2 .bullet-list li::before { color: var(--purple); }
+  .s3 .bullet-list li::before { color: var(--green);  }
+  .s4 .bullet-list li::before { color: var(--amber);  }
+
+  /* ─── GRID CARDS ─── */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .mini-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .mini-card h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mini-card p, .mini-card li {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    list-style: none;
+    padding: 2px 0;
+  }
+  .mini-card ul { padding: 0; }
+  .mini-card li::before { content: "– "; color: var(--text-muted); }
+
+  /* ─── FORMULA BOX ─── */
+  .formula-box {
+    background: #1e293b;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    font-family: 'Fira Code', monospace;
+  }
+  .formula-box .formula-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 10px;
+    font-family: 'Inter', sans-serif;
+  }
+  .formula-box .formula-main {
+    font-size: 18px;
+    color: #e2e8f0;
+    text-align: center;
+    padding: 12px 0;
+    font-weight: 500;
+  }
+  .formula-box .formula-note {
+    font-size: 12.5px;
+    color: #94a3b8;
+    font-family: 'Inter', sans-serif;
+    margin-top: 8px;
+  }
+  .formula-box .formula-note span { color: #7dd3fc; }
+
+  /* ─── TAXONOMY TABLE ─── */
+  .tax-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 14px 0;
+    font-size: 14px;
+    border: 1px solid var(--border);
+  }
+  .tax-table thead { background: var(--blue); color: white; }
+  .s2 .tax-table thead { background: var(--purple); }
+  .s3 .tax-table thead { background: var(--green);  }
+  .tax-table th, .tax-table td {
+    padding: 11px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .tax-table tbody tr:last-child td { border-bottom: none; }
+  .tax-table tbody tr:nth-child(even) { background: #f8fafc; }
+  .tax-table td:first-child { font-weight: 700; font-family: 'Fira Code', monospace; font-size: 13px; }
+
+  /* ─── PROCESS STEPS ─── */
+  .steps {
+    counter-reset: step;
+    padding: 0;
+    list-style: none;
+  }
+  .steps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14.5px;
+    color: var(--text-secondary);
+    counter-increment: step;
+  }
+  .steps li:last-child { border-bottom: none; }
+  .steps li::before {
+    content: counter(step);
+    min-width: 28px; height: 28px;
+    background: var(--blue-light);
+    color: var(--blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .s2 .steps li::before { background: var(--purple-light); color: var(--purple); }
+  .s3 .steps li::before { background: var(--green-light);  color: var(--green);  }
+  .s4 .steps li::before { background: var(--amber-light);  color: var(--amber);  }
+
+  /* ─── IMAGE CALLOUT ─── */
+  .img-callout {
+    background: white;
+    border: 2px dashed var(--blue-mid);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .img-callout-label {
+    position: absolute;
+    top: -12px;
+    left: 16px;
+    background: var(--blue);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+  .img-callout p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+
+  /* ─── SVG DIAGRAM ─── */
+  .diagram-wrap {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 20px;
+    overflow-x: auto;
+    text-align: center;
+  }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+
+  /* ─── SUMMARY BOX ─── */
+  .summary {
+    background: #0f172a;
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin: 20px 0;
+    color: #e2e8f0;
+  }
+  .summary h4 {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #7dd3fc;
+    margin-bottom: 12px;
+  }
+  .summary ul { list-style: none; padding: 0; }
+  .summary li {
+    padding: 5px 0;
+    font-size: 14px;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .summary li::before { content: "✓"; color: #4ade80; font-weight: 700; flex-shrink: 0; }
+
+  /* ─── TWO-COL COMPARE ─── */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 14px 0;
+  }
+  .compare-col {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .compare-col h4 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .compare-col ul { list-style: none; padding: 0; }
+  .compare-col li {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    padding: 4px 0;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .compare-col li::before { content: "•"; flex-shrink: 0; font-weight: 700; }
+  .adv li::before { color: var(--green); }
+  .disadv li::before { color: var(--red); }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 24px 0;
+  }
+
+  p { margin-bottom: 10px; color: var(--text-secondary); font-size: 14.5px; }
+
+  @media (max-width: 640px) {
+    .grid-2, .compare { grid-template-columns: 1fr; }
+    .page-title { font-size: 1.7rem; }
+    .section-title { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════ PAGE HEADER ══════ -->
+<div class="page-header">
+  <div class="container">
+    <div class="breadcrumb">
+      <span class="icon">📒</span>
+      <span>Structured Notes</span>
+      <span class="sep">/</span>
+      <span>Information Retrieval</span>
+      <span class="sep">·</span>
+      <span>Unit IV</span>
+    </div>
+    <h1 class="page-title">Unit IV – Parallel &amp; Distributed IR &amp; Searching the Web</h1>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ══════ TOPICS COVERED ══════ -->
+  <div class="topics-card">
+    <div class="topics-label">Topics Covered</div>
+    <div class="tags">
+      <span class="tag tag-blue">Parallel Computing</span>
+      <span class="tag tag-purple">Parallel IR (MIMD &amp; SIMD)</span>
+      <span class="tag tag-green">Distributed IR</span>
+      <span class="tag tag-amber">Web Search Engines</span>
+      <span class="tag tag-teal">Crawling &amp; Indexing</span>
+      <span class="tag tag-red">Result Merging &amp; Ranking</span>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 1 — INTRODUCTION
+  ═══════════════════════════════════════════ -->
+  <div class="section s1">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <h2 class="section-title">Introduction</h2>
+    </div>
+
+    <div class="def-card">
+      <p>As document collections grow, the cost of managing them with traditional IR systems increases. Searching (query processing) and indexing (creating data structures to enable fast searches) take more time and resources as the collection size grows. Larger collections lead to longer response times, which can make the system unusable.</p>
+      <p>
+        <strong>Parallel IR</strong> uses multiple processors to speed up tasks, while
+        <strong>Distributed IR</strong> spreads data across computers. These approaches improve
+        <em>speed and scalability</em> for modern search systems like web search engines.
+      </p>
+    </div>
+
+    <!-- ── 1.1 Parallel Computing ── -->
+    <div class="subsection">
+      <div class="subsection-title">1.1 Parallel Computing</div>
+      <div class="def-card">
+        <p><strong>Parallel computing</strong> is the simultaneous application of multiple processors to solve a single problem, where each processor works on a different part of the problem.</p>
+        <ul class="bullet-list">
+          <li>Overall time = time required by the <strong>longest running subtask</strong>.</li>
+          <li>More processors → smaller parts → faster solution → scalable to larger problems.</li>
+        </ul>
+      </div>
+
+      <div class="subsubsection-title">Flynn's Taxonomy of Parallel Architectures</div>
+      <table class="tax-table">
+        <thead>
+          <tr><th>Class</th><th>Full Name</th><th>Description</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>SISD</td>
+            <td>Single Instruction, Single Data</td>
+            <td>Traditional sequential (von Neumann) computer</td>
+            <td>Uniprocessor PCs</td>
+          </tr>
+          <tr>
+            <td>SIMD</td>
+            <td>Single Instruction, Multiple Data</td>
+            <td>N processors execute <em>same instruction</em> on N data streams simultaneously</td>
+            <td>CM-2 (Thinking Machines)</td>
+          </tr>
+          <tr>
+            <td>MISD</td>
+            <td>Multiple Instruction, Single Data</td>
+            <td>N processors each execute different instructions on one shared data stream; rare</td>
+            <td>Systolic Arrays</td>
+          </tr>
+          <tr>
+            <td>MIMD</td>
+            <td>Multiple Instruction, Multiple Data</td>
+            <td>N processors, N instruction streams, N data streams; most versatile &amp; popular</td>
+            <td>IBM SP2, SMP servers</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="box box-blue">
+        <strong>🔑 Key Concept — MIMD</strong>
+        MIMD is the most general class. Processors can work on <em>separate tasks</em> or <em>cooperate on one task</em>. MIMD systems with high processor interaction are <strong>tightly coupled</strong>; low interaction = <strong>loosely coupled</strong>. Distributed systems are also MIMD — just with higher inter-processor communication cost.
+      </div>
+
+      <div class="grid-2">
+        <div class="mini-card">
+          <h4>⚡ Granularity</h4>
+          <ul>
+            <li><strong>Coarse-grained:</strong> much computation, little communication (distributed)</li>
+            <li><strong>Fine-grained:</strong> much communication, little computation (shared memory MIMD)</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <h4>💡 Coupling</h4>
+          <ul>
+            <li><strong>Tightly coupled:</strong> high processor interaction, fast communication</li>
+            <li><strong>Loosely coupled:</strong> low interaction, network-based (e.g., distributed IR)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 1.2 Performance Measures ── -->
+    <div class="subsection">
+      <div class="subsection-title">1.2 Performance Measures</div>
+
+      <div class="formula-box">
+        <div class="formula-label">⚡ Speedup</div>
+        <div class="formula-main">S = T<sub>seq</sub> / T<sub>par</sub></div>
+        <div class="formula-note">
+          <span>T_seq</span> = best sequential algorithm time &nbsp;|&nbsp;
+          <span>T_par</span> = parallel algorithm time on N processors<br>
+          Ideal: <span>S = N</span> (perfect speedup). In practice, unattainable.
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <div class="formula-label">📐 Amdahl's Law</div>
+        <div class="formula-main">S = 1 / ( J + (1 − J) / N )</div>
+        <div class="formula-note">
+          <span>J</span> = fraction of problem that must be sequential (cannot be parallelised)<br>
+          <span>N</span> = number of processors<br>
+          As N → ∞, maximum speedup → <span>1/J</span>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <div class="formula-label">📊 Efficiency</div>
+        <div class="formula-main">E = S / N</div>
+        <div class="formula-note">
+          <span>S</span> = speedup &nbsp;|&nbsp; <span>N</span> = number of processors<br>
+          Ideal: <span>E = 1</span> (no processor ever idle). In practice, unattainable.
+        </div>
+      </div>
+
+      <div class="box box-amber">
+        <strong>⚠️ Why Perfect Speedup Is Unattainable</strong>
+        Problem cannot always be divided into N equal subtasks · Parallel architecture imposes scheduling/synchronisation overhead · Some problems contain an inherently sequential component.
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 2 — PARALLEL IR
+  ═══════════════════════════════════════════ -->
+  <div class="section s2">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <h2 class="section-title">Parallel IR</h2>
+    </div>
+
+    <!-- 2.1 Introduction -->
+    <div class="subsection">
+      <div class="subsection-title">2.1 Introduction</div>
+      <div class="def-card">
+        <p>Parallel IR can be developed in two ways:</p>
+        <ul class="bullet-list">
+          <li>Develop <strong>new retrieval strategies</strong> that directly lend themselves to parallel implementation.</li>
+          <li>Adapt <strong>existing, well-studied algorithms</strong> to parallel processing.</li>
+        </ul>
+        <p>Both <strong>MIMD</strong> and <strong>SIMD</strong> architectures can be used for IR tasks.</p>
+      </div>
+    </div>
+
+    <!-- 2.2 MIMD -->
+    <div class="subsection">
+      <div class="subsection-title">2.2 MIMD Architectures</div>
+
+      <div class="compare">
+        <div class="compare-col">
+          <h4>🔀 Multitasking (Non-Cooperative)</h4>
+          <ul>
+            <li>Each processor runs an <strong>independent search engine</strong>.</li>
+            <li>A <strong>broker</strong> distributes incoming queries to processors.</li>
+            <li>Search engines do not share computation for a single query.</li>
+            <li>Shared resources: code libraries, file system caches, shared memory.</li>
+          </ul>
+          <div style="margin-top:10px;" class="box box-green" style="font-size:13px;">✅ Simple to implement, scales easily (more processors = more queries handled)</div>
+          <div style="margin-top:8px;" class="box box-red" style="font-size:13px;">❌ Individual query response time unchanged; possible I/O bottlenecks</div>
+        </div>
+        <div class="compare-col">
+          <h4>🤝 Cooperative Parallelism (Query-Level)</h4>
+          <ul>
+            <li>Multiple processors <strong>collaborate</strong> on one query.</li>
+            <li>Broker splits query → sends subtasks → processors evaluate parts → results merged.</li>
+            <li>Significantly improves <strong>query response time</strong>.</li>
+          </ul>
+          <div style="margin-top:36px;" class="box box-green" style="font-size:13px;">✅ Dramatically reduces latency for a single query</div>
+          <div style="margin-top:8px;" class="box box-red" style="font-size:13px;">❌ More complex coordination between processors</div>
+        </div>
+      </div>
+
+      <!-- Data Partitioning Strategies -->
+      <div class="subsubsection-title">Data Partitioning Strategies</div>
+
+      <div class="grid-2">
+        <div class="mini-card">
+          <h4>📄 Document Partitioning</h4>
+          <ul>
+            <li>Collection is <em>horizontally</em> partitioned.</li>
+            <li>Each processor gets a <strong>subset of documents</strong>.</li>
+            <li>Every processor runs the full query on its subset.</li>
+            <li>Broker merges partial ranked lists.</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <h4>🔤 Term Partitioning</h4>
+          <ul>
+            <li>Inverted index is <em>vertically</em> partitioned by terms.</li>
+            <li>Each processor handles a <strong>subset of index terms</strong>.</li>
+            <li>Query broken into terms → sent to responsible processor.</li>
+            <li>Broker aggregates partial document scores.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="box box-purple">
+        <strong>⚖️ When to Use Which?</strong>
+        <span>Skewed term distribution</span> → Document partitioning performs better.&nbsp;
+        <span>Uniform term usage in queries</span> → Term partitioning performs better.
+      </div>
+
+      <!-- Inverted File Indexing -->
+      <div class="subsubsection-title">Inverted File Indexing in Parallel IR</div>
+
+      <div class="grid-2">
+        <div class="mini-card">
+          <h4>🔗 Logical Document Partitioning</h4>
+          <ul>
+            <li>Global inverted file is <strong>shared</strong>.</li>
+            <li>Dictionary entries include P pointers (one per processor).</li>
+            <li>All processors read shared data without lock contention.</li>
+            <li>Index construction: each processor indexes a subset, lists merged via heap-based priority queue.</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <h4>🗂️ Physical Document Partitioning</h4>
+          <ul>
+            <li>Each processor builds a <strong>self-contained index</strong> for its own documents.</li>
+            <li>No shared index during query processing.</li>
+            <li>Broker merges local hit-lists using priority queue.</li>
+            <li>Global term stats needed for consistent ranking (2-phase evaluation).</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Signature Files & Suffix Arrays (brief) -->
+      <div class="subsubsection-title">Other Index Structures</div>
+      <div class="def-card">
+        <ul class="bullet-list">
+          <li><strong>Suffix Arrays (Document Partitioning):</strong> Each processor builds a local suffix array; broker merges results.</li>
+          <li><strong>Suffix Arrays (Term Partitioning):</strong> Array divided lexicographically; requires shared memory access — not well-suited to distributed environments.</li>
+          <li><strong>Signature Files (Document Partitioning):</strong> Each processor builds signatures for its documents; query signature broadcast; local matching done in parallel.</li>
+          <li><strong>Signature Files (Term Partitioning):</strong> Uses bit-sliced signature files; limited speedup and high false-positive removal cost — not recommended.</li>
+          <li><strong>Threads</strong> (Java / POSIX) are used for implementing parallel processes, providing communication, concurrency, and synchronisation abstractions.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 2.3 SIMD -->
+    <div class="subsection">
+      <div class="subsection-title">2.3 SIMD Architectures</div>
+
+      <div class="def-card">
+        <p><strong>SIMD</strong> architectures execute the same operation on multiple data points simultaneously. A key example is the <strong>Thinking Machines CM-2</strong>, applied to both signature-file and inverted-file IR algorithms.</p>
+        <ul class="bullet-list">
+          <li><strong>Processing Element (PE):</strong> Each PE has a 1-bit ALU and local memory.</li>
+          <li><strong>Local Parallel Instructions:</strong> Perform operations in parallel on each PE's local data.</li>
+          <li><strong>Non-local Instructions:</strong> Inter-PE communication (e.g., finding a global maximum or vector sum).</li>
+          <li><strong>Virtual Processors (VP):</strong> CM-2 abstracts physical processors into VPs; as VP ratio increases, execution time increases nearly linearly.</li>
+        </ul>
+      </div>
+
+      <div class="subsubsection-title">Signature Files on SIMD</div>
+      <div class="def-card">
+        <p>Signature files are a natural fit for SIMD due to their binary, parallel nature.</p>
+        <ul class="bullet-list">
+          <li><strong>probe.doc:</strong> Core subroutine — tests if a document signature matches a query term using hash functions; each VP handles a separate document signature simultaneously.</li>
+          <li><strong>Segmented Signatures:</strong> If a document has more terms than fit in one signature, it is split into segments; a match in any segment counts.</li>
+          <li><strong>Boolean Retrieval:</strong> Recursive structure (bquery.t) combining terms with AND, OR, NOT operators.</li>
+          <li><strong>Ranked Retrieval:</strong> Query terms have weights; each match increases a document's score stored in a parallel variable (Doc.score).</li>
+          <li><strong>Ranking Techniques:</strong> Global ranking (sorts all scores) vs. Iterative global max (finds top-k efficiently).</li>
+        </ul>
+      </div>
+
+      <div class="subsubsection-title">Optimising Signature File Access</div>
+      <div class="grid-2">
+        <div class="mini-card">
+          <h4>📦 Batch Processing</h4>
+          <ul>
+            <li>If the full signature file doesn't fit in memory, processed in batches.</li>
+            <li>Multiple queries per batch amortise I/O costs.</li>
+            <li>Improves throughput but <em>not</em> response time.</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <h4>🔲 Bit-Sliced Signature Files</h4>
+          <ul>
+            <li>Stored column-wise (bit-slices) instead of row-wise.</li>
+            <li>Only relevant bit-slices for the query are loaded.</li>
+            <li>Each VP handles one document's bits across slices.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="subsubsection-title">Inverted Files on SIMD</div>
+      <div class="def-card">
+        <ul class="bullet-list">
+          <li><strong>Postings Table:</strong> Stores document IDs for each term; Index maps each term to a range in the postings table.</li>
+          <li><strong>Scoring Algorithm:</strong> For each query term, look up postings → activate PEs → update document scores (accumulators).</li>
+          <li><strong>Partitioned Postings File:</strong> Each document's postings and accumulator reside on the same processor → reduces communication overhead; supports sub-2-second query times on terabyte-scale data (CM-2 with 64K processors).</li>
+          <li><strong>Space Overhead:</strong> ~33% (10–20% from padding in partitioned segments).</li>
+        </ul>
+      </div>
+
+      <div class="summary">
+        <h4>📌 SIMD Summary</h4>
+        <ul>
+          <li>Excellent for signature-based retrieval (especially when false positives are acceptable).</li>
+          <li>Inverted file search adapted using careful data layout and processor-aware partitioning.</li>
+          <li>Less flexible than MIMD but offers high-throughput parallel processing on large datasets.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 3 — DISTRIBUTED IR
+  ═══════════════════════════════════════════ -->
+  <div class="section s3">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <h2 class="section-title">Distributed IR</h2>
+    </div>
+
+    <!-- 3.1 Introduction -->
+    <div class="subsection">
+      <div class="subsection-title">3.1 Introduction</div>
+      <div class="def-card">
+        <p><strong>Distributed computing</strong> applies multiple computers connected by a network to solve a single problem. Each node may be independently owned, can itself be a parallel computer, and communicates via <strong>TCP/IP</strong> (slower than shared memory in MIMD).</p>
+      </div>
+
+      <div class="subsubsection-title">Distributed IR Architecture Components</div>
+      <div class="grid-2">
+        <div class="mini-card">
+          <h4>🤝 Broker Process</h4>
+          <ul>
+            <li>Accepts client search requests.</li>
+            <li>Forwards requests to selected servers.</li>
+            <li>Collects intermediate results.</li>
+            <li>Combines them into a final ranked list.</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <h4>🖥️ Server Processes</h4>
+          <ul>
+            <li>Each server resides on a separate node.</li>
+            <li>Processes document subsets or entire collections.</li>
+            <li>Communicates with the broker over the network.</li>
+            <li>Supports coarse-grained parallelism.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="box box-green">
+        <strong>💡 Why Document Partitioning Suits Distributed IR</strong>
+        Documents can be divided into collections fitting naturally on separate servers · Each server processes its self-contained subcollection (reduces inter-server communication) · Workload is computationally intensive but communication-light.
+      </div>
+
+      <div class="box box-red">
+        <strong>⚠️ Why Term Partitioning Is Not Ideal for Distributed IR</strong>
+        Requires significant inter-server communication for merging partial results · Increases response latency due to synchronisation overhead.
+      </div>
+
+      <div class="subsubsection-title">Engineering Issues</div>
+      <div class="def-card">
+        <ul class="bullet-list">
+          <li><strong>Search Protocol:</strong> Defines message syntax, sequence for server discovery, query submission, result retrieval; uses TCP/IP as transport.</li>
+          <li><strong>Server Design:</strong> Must accept/parse requests, spawn threads per request, apply caching, optimise for locality of reference.</li>
+          <li><strong>Broker Design:</strong> Accepts queries asynchronously, selects relevant servers, distributes query in parallel, merges results into a final ranked list.</li>
+        </ul>
+      </div>
+
+      <div class="subsubsection-title">Standard Search Protocols</div>
+      <div class="grid-2">
+        <div class="mini-card">
+          <h4>📚 Z39.50</h4>
+          <ul>
+            <li>Widely adopted client/server IR protocol.</li>
+            <li>Supports search, retrieval, database discovery.</li>
+            <li>Suitable for library systems and academic databases.</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <h4>🌐 STARTS</h4>
+          <ul>
+            <li>Stanford Proposal for Internet Meta-Searching.</li>
+            <li>Addresses merging of results from different sources.</li>
+            <li>Standardises scoring and relevance across systems.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3.2 Collection Partitioning -->
+    <div class="subsection">
+      <div class="subsection-title">3.2 Collection Partitioning</div>
+      <p>Collection partitioning refers to how documents are assigned across different search servers. The strategy depends on administration, collection size, and search goals.</p>
+
+      <div class="def-card">
+        <div class="subsubsection-title" style="margin-top:0">1. Independent / Heterogeneous Systems</div>
+        <ul class="bullet-list">
+          <li>Documents independently indexed and managed at each server — no central control.</li>
+          <li>Each server often focuses on a specific topic → <strong>semantic partitioning</strong> (legal, medical, tech).</li>
+          <li>Common in meta-search systems (federated search engines).</li>
+        </ul>
+      </div>
+
+      <div class="def-card">
+        <div class="subsubsection-title" style="margin-top:0">2. Centrally Administered Systems</div>
+        <div class="grid-2" style="margin-top:10px">
+          <div class="mini-card">
+            <h4>🔁 (a) Replicated Partitioning</h4>
+            <ul>
+              <li>Entire collection copied to every server.</li>
+              <li>Used for high availability and load balancing.</li>
+              <li>⚠️ Updates/deletions must be broadcast to all servers.</li>
+            </ul>
+          </div>
+          <div class="mini-card">
+            <h4>🎲 (b) Random Distribution</h4>
+            <ul>
+              <li>Documents distributed randomly among servers.</li>
+              <li>Every query broadcast to all servers; results merged.</li>
+              <li>Best when users expect to search the entire collection.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mini-card" style="margin-top:10px">
+          <h4>🏷️ (c) Semantic Partitioning</h4>
+          <ul>
+            <li>Documents organised by topic/category (sports, medicine, finance).</li>
+            <li>Done manually or using automatic clustering/categorisation techniques.</li>
+            <li>Improves search precision by sending queries to topic-relevant servers.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3.3 Source Selection -->
+    <div class="subsection">
+      <div class="subsection-title">3.3 Source Selection</div>
+      <div class="def-card">
+        <p><strong>Source selection</strong> is the process of determining which distributed document collections are most likely to contain relevant documents for the current query.</p>
+      </div>
+
+      <div class="subsubsection-title">Approaches to Source Selection</div>
+      <div class="def-card">
+        <ul class="bullet-list">
+          <li><strong>1. Broadcast to All Servers:</strong> Simple but inefficient. Used when distribution is random, collections overlap semantically, or communication costs are low.</li>
+          <li><strong>2. Ranked Collection Selection:</strong> Each collection is treated as a "super-document"; query is compared against collection summaries using <em>cosine similarity</em> and <em>tf-idf</em> weighting. <br>
+            <span style="font-size:13px;color:#475569;">Problem: <strong>False Drops</strong> — a collection may rank highly overall but no individual document inside may actually be relevant. Solution (Moffat &amp; Zobel): partition each collection into blocks (e.g., every 10 docs) and index blocks instead of whole collections.</span>
+          </li>
+          <li><strong>3. Content Modeling (Voorhees):</strong> Use training queries to build a model for each collection's content; when a new query arrives, match it to similar training queries and predict which collections to query and how many results to expect.</li>
+        </ul>
+      </div>
+
+      <div class="formula-box">
+        <div class="formula-label">📐 tf-idf for Collection Ranking</div>
+        <div class="formula-main">idf_i = log(N / n_i)</div>
+        <div class="formula-note">
+          <span>tf_ij</span> = frequency of term i in collection j &nbsp;|&nbsp;
+          <span>N</span> = number of collections &nbsp;|&nbsp;
+          <span>n_i</span> = number of collections containing term i
+        </div>
+      </div>
+    </div>
+
+    <!-- 3.4 Query Processing -->
+    <div class="subsection">
+      <div class="subsection-title">3.4 Query Processing</div>
+      <p>Query processing in distributed IR is a multi-step procedure where user queries are handled by multiple distributed servers to retrieve relevant documents efficiently.</p>
+
+      <div class="subsubsection-title">Steps in Query Processing</div>
+      <ol class="steps">
+        <li><strong>Select Collections to Search</strong> — Choose relevant collections based on query content (source selection or semantic matching).</li>
+        <li><strong>Distribute the Query</strong> — Broker sends the query to selected collections using a defined search protocol (e.g., TCP/IP, STARTS, Z39.50).</li>
+        <li><strong>Evaluate Query in Parallel</strong> — Each search server evaluates the query independently using its local index and algorithm.</li>
+        <li><strong>Merge Results</strong> — Broker collects and merges partial results into a final ranked list to return to the user.</li>
+      </ol>
+
+      <div class="subsubsection-title">Result Merging Strategies</div>
+      <div class="def-card">
+        <ul class="bullet-list">
+          <li><strong>Boolean Queries:</strong> Servers return Boolean result sets; final result = union of all sets.</li>
+          <li><strong>(a) Round-Robin Interleaving:</strong> Simple interleaving of top results from each server. ❌ Gives equal weight to all collections regardless of relevance.</li>
+          <li><strong>(b) Score-Based Merging:</strong> Combine documents by relevance score. ✅ Works well when term statistics are globally consistent. ❌ Can fail with semantic partitions or independent servers.</li>
+          <li><strong>(c) Reranking with Collection Weights (Callan):</strong> Adjust scores based on collection relevance.</li>
+        </ul>
+      </div>
+
+      <div class="formula-box">
+        <div class="formula-label">📐 Collection Weight Formula</div>
+        <div class="formula-main">w_i = 1 + |C| × (s̄ − s_i) / s̄</div>
+        <div class="formula-note">
+          <span>|C|</span> = number of collections &nbsp;|&nbsp;
+          <span>s_i</span> = score of collection i &nbsp;|&nbsp;
+          <span>s̄</span> = average collection score<br>
+          Prioritises results from more relevant collections.
+        </div>
+      </div>
+
+      <div class="def-card">
+        <ul class="bullet-list">
+          <li><strong>3. Global Term Statistics-Based Merging:</strong> Most accurate but complex. Two methods: (i) use existing global index included with query; (ii) two-round communication — Round 1: servers return collection statistics; Round 2: broker computes global stats and resends for improved scoring.</li>
+          <li><strong>4. Broker-Side Reranking:</strong> Servers return term statistics per document; broker reranks all documents centrally. Produces results as if all documents were in a single collection.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3.5 Web Issues -->
+    <div class="subsection">
+      <div class="subsection-title">3.5 Web Issues</div>
+      <div class="compare">
+        <div class="compare-col">
+          <h4>🏢 Centralised Web Search (Current Model)</h4>
+          <ul>
+            <li>All crawled web documents stored and indexed centrally.</li>
+            <li>Distributed and parallel IR used internally for scalability.</li>
+            <li>Examples: <strong>Google, Bing</strong>.</li>
+          </ul>
+        </div>
+        <div class="compare-col">
+          <h4>🕸️ Truly Distributed Web IR (Harvest System)</h4>
+          <ul>
+            <li>Web's distributed nature is preserved.</li>
+            <li><strong>Gatherers:</strong> collect content from various sources.</li>
+            <li><strong>Brokers:</strong> handle queries, manage indexing and results.</li>
+            <li><strong>Broker Registry:</strong> helps users find the right broker for their topic.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 4 — SEARCHING THE WEB
+  ═══════════════════════════════════════════ -->
+  <div class="section s4">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <h2 class="section-title">Searching the Web</h2>
+    </div>
+
+    <!-- 4.1 Introduction -->
+    <div class="subsection">
+      <div class="subsection-title">4.1 Introduction</div>
+      <div class="def-card">
+        <p>The World Wide Web originated in the late 1980s and can be seen as a very large, <strong>unstructured but ubiquitous database</strong> — estimated at over one terabyte of textual data, plus images, audio, and video. This triggers the need for efficient tools to manage, retrieve, and filter information.</p>
+        <p>We focus on <em>syntactic search</em> — searching for user-specified words or patterns in text. Natural language analysis is an alternative but is too costly and not yet very effective at large scale.</p>
+      </div>
+
+      <div class="subsubsection-title">Three Forms of Searching the Web</div>
+      <div class="def-card">
+        <ul class="bullet-list">
+          <li><strong>Search Engines:</strong> Index a portion of web documents as a full-text database.</li>
+          <li><strong>Web Directories:</strong> Classify selected web documents by subject (human-curated).</li>
+          <li><strong>Hyperlink-Based Search:</strong> Exploits the hyperlink structure of the web (not yet fully available).</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4.2 Challenges -->
+    <div class="subsection">
+      <div class="subsection-title">4.2 Challenges</div>
+
+      <div class="subsubsection-title">Data-Related Problems</div>
+      <div class="def-card">
+        <ul class="bullet-list">
+          <li><strong>Distributed Data:</strong> Data spans many computers and platforms with varying bandwidth and reliability.</li>
+          <li><strong>High Volatility:</strong> ~40% of the web changes every month; dangling links and relocation problems are common.</li>
+          <li><strong>Large Volume:</strong> Exponential growth poses difficult scaling issues.</li>
+          <li><strong>Unstructured &amp; Redundant Data:</strong> ~30% of web pages are near-duplicates; the web uses "semi-structured" data, unlike a true hypertext with a conceptual model.</li>
+          <li><strong>Poor Data Quality:</strong> No editorial process; data can be false, invalid, or poorly written. Typos range from 1 in 200 (common words) to 1 in 3 (foreign surnames).</li>
+          <li><strong>Heterogeneous Data:</strong> Multiple media types, formats, languages, and alphabets (e.g., Chinese Kanji, Japanese).</li>
+        </ul>
+      </div>
+
+      <div class="subsubsection-title">User-Related Problems</div>
+      <div class="def-card">
+        <ul class="bullet-list">
+          <li><strong>How to specify a query:</strong> Users often don't understand the system's logical view of text (case sensitivity, stop words, stemming, Boolean logic).</li>
+          <li><strong>How to interpret the answer:</strong> Results can be too large, poorly ranked, or not up to date.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4.3 Search Engines -->
+    <div class="subsection">
+      <div class="subsection-title">4.3 Search Engines</div>
+      <div class="def-card">
+        <p><strong>Search engines</strong> are specialised IR systems designed for massive-scale web data. They rely entirely on <strong>precomputed indexes</strong> because accessing the full text of documents at query time is impractical (cannot store local copies of the entire web; real-time retrieval is too slow).</p>
+      </div>
+
+      <!-- Figure 13.3 -->
+      <div class="img-callout">
+        <span class="img-callout-label">📷 Refer to Figure 13.3 — Page in PDF (Search Engine Architecture)</span>
+        <p>Figure 13.3 shows the software architecture of a search engine based on the AltaVista architecture, with two parts: (1) the user side (user interface + query engine) and (2) the crawler and index modules.</p>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+            <!-- Background -->
+            <rect width="760" height="320" fill="#f8fafc" rx="10"/>
+
+            <!-- Title -->
+            <text x="380" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">Figure 13.3 – AltaVista Centralised Search Engine Architecture</text>
+
+            <!-- ── LEFT SIDE: User Side ── -->
+            <rect x="20" y="50" width="340" height="240" rx="10" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+            <text x="190" y="74" text-anchor="middle" font-size="12" font-weight="700" fill="#1e40af">USER SIDE</text>
+
+            <!-- User box -->
+            <rect x="140" y="84" width="100" height="44" rx="8" fill="#2563eb" stroke="none"/>
+            <text x="190" y="108" text-anchor="middle" font-size="12" font-weight="600" fill="white">👤 User</text>
+
+            <!-- Arrow down -->
+            <line x1="190" y1="128" x2="190" y2="152" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+
+            <!-- Query Interface -->
+            <rect x="105" y="152" width="170" height="44" rx="8" fill="#3b82f6" stroke="none"/>
+            <text x="190" y="170" text-anchor="middle" font-size="11.5" font-weight="600" fill="white">Query Interface</text>
+            <text x="190" y="187" text-anchor="middle" font-size="10.5" fill="#bfdbfe">(user enters queries)</text>
+
+            <!-- Arrow down -->
+            <line x1="190" y1="196" x2="190" y2="222" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+
+            <!-- Query Engine -->
+            <rect x="90" y="222" width="200" height="44" rx="8" fill="#1d4ed8" stroke="none"/>
+            <text x="190" y="242" text-anchor="middle" font-size="11.5" font-weight="600" fill="white">Query Engine</text>
+            <text x="190" y="257" text-anchor="middle" font-size="10.5" fill="#bfdbfe">(uses &gt;75% of resources)</text>
+
+            <!-- ── RIGHT SIDE: Crawler/Indexer ── -->
+            <rect x="400" y="50" width="340" height="240" rx="10" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
+            <text x="570" y="74" text-anchor="middle" font-size="12" font-weight="700" fill="#15803d">CRAWLER &amp; INDEXER SIDE</text>
+
+            <!-- Web -->
+            <rect x="480" y="84" width="160" height="44" rx="8" fill="#64748b" stroke="none"/>
+            <text x="560" y="108" text-anchor="middle" font-size="12" font-weight="600" fill="white">🌐 The Web</text>
+
+            <!-- Arrow -->
+            <line x1="560" y1="128" x2="560" y2="152" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+
+            <!-- Crawler -->
+            <rect x="480" y="152" width="160" height="44" rx="8" fill="#16a34a" stroke="none"/>
+            <text x="560" y="170" text-anchor="middle" font-size="11.5" font-weight="600" fill="white">🕷️ Crawler</text>
+            <text x="560" y="187" text-anchor="middle" font-size="10.5" fill="#bbf7d0">(robot/spider)</text>
+
+            <!-- Arrow -->
+            <line x1="560" y1="196" x2="560" y2="222" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+
+            <!-- Index Store -->
+            <rect x="470" y="222" width="180" height="44" rx="8" fill="#15803d" stroke="none"/>
+            <text x="560" y="242" text-anchor="middle" font-size="11.5" font-weight="600" fill="white">📦 Index Store</text>
+            <text x="560" y="257" text-anchor="middle" font-size="10.5" fill="#bbf7d0">(inverted index)</text>
+
+            <!-- Bridge Arrow (Index → Query Engine) -->
+            <line x1="470" y1="244" x2="290" y2="244" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arr2)"/>
+            <text x="380" y="236" text-anchor="middle" font-size="10" fill="#92400e" font-weight="600">query lookup</text>
+
+            <!-- Arrow markers -->
+            <defs>
+              <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#64748b"/>
+              </marker>
+              <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#f59e0b"/>
+              </marker>
+            </defs>
+
+            <!-- Legend -->
+            <text x="380" y="308" text-anchor="middle" font-size="11" fill="#64748b">In 1998: 20 multi-processor machines · &gt;130 GB RAM · &gt;500 GB disk space</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Centralised Architecture -->
+      <div class="subsubsection-title">4.3.1 Centralised Architecture</div>
+      <div class="def-card">
+        <p>Most search engines use a <strong>centralised crawler-indexer architecture</strong>. <strong>Crawlers</strong> (also called robots, spiders, wanderers, or walkers) traverse the web, sending new or updated pages to a main server to be indexed. The index is then used to answer queries.</p>
+        <ul class="bullet-list">
+          <li>Main problems: gathering data from the highly dynamic web, saturated communication links, high server load, and volume of data.</li>
+          <li>Good load balancing between crawling, indexing, and query answering is critical.</li>
+        </ul>
+      </div>
+
+      <!-- Figure 13.4 -->
+      <div class="img-callout">
+        <span class="img-callout-label">📷 Refer to Figure 13.4 — Page in PDF (Harvest Architecture)</span>
+        <p>Figure 13.4 shows an example of the Harvest distributed architecture, illustrating gatherers collecting from web servers and feeding data to multiple brokers, with a broker registry for discovery.</p>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif">
+            <rect width="760" height="380" fill="#f8fafc" rx="10"/>
+            <text x="380" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">Figure 13.4 – Harvest Distributed Architecture</text>
+
+            <defs>
+              <marker id="harr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#64748b"/>
+              </marker>
+              <marker id="harr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#7c3aed"/>
+              </marker>
+            </defs>
+
+            <!-- Web Servers (Row 1) -->
+            <rect x="40"  y="50" width="120" height="50" rx="8" fill="#64748b"/>
+            <text x="100" y="74" text-anchor="middle" font-size="11" font-weight="600" fill="white">🖥️ Web Server 1</text>
+            <text x="100" y="90" text-anchor="middle" font-size="10" fill="#cbd5e1">e.g., CIA</text>
+
+            <rect x="200" y="50" width="120" height="50" rx="8" fill="#64748b"/>
+            <text x="260" y="74" text-anchor="middle" font-size="11" font-weight="600" fill="white">🖥️ Web Server 2</text>
+            <text x="260" y="90" text-anchor="middle" font-size="10" fill="#cbd5e1">e.g., NASA</text>
+
+            <rect x="440" y="50" width="120" height="50" rx="8" fill="#64748b"/>
+            <text x="500" y="74" text-anchor="middle" font-size="11" font-weight="600" fill="white">🖥️ Web Server 3</text>
+            <text x="500" y="90" text-anchor="middle" font-size="10" fill="#cbd5e1">e.g., Gov</text>
+
+            <rect x="600" y="50" width="120" height="50" rx="8" fill="#64748b"/>
+            <text x="660" y="74" text-anchor="middle" font-size="11" font-weight="600" fill="white">🖥️ Web Server 4</text>
+            <text x="660" y="90" text-anchor="middle" font-size="10" fill="#cbd5e1">e.g., NAS</text>
+
+            <!-- Arrows down to Gatherers -->
+            <line x1="100" y1="100" x2="130" y2="160" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#harr)"/>
+            <line x1="260" y1="100" x2="220" y2="160" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#harr)"/>
+            <line x1="500" y1="100" x2="540" y2="160" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#harr)"/>
+            <line x1="660" y1="100" x2="620" y2="160" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#harr)"/>
+
+            <!-- Gatherers (Row 2) -->
+            <rect x="50" y="160" width="200" height="50" rx="8" fill="#0891b2"/>
+            <text x="150" y="183" text-anchor="middle" font-size="11.5" font-weight="600" fill="white">📥 Gatherer 1</text>
+            <text x="150" y="200" text-anchor="middle" font-size="10" fill="#a5f3fc">Collects &amp; extracts index info</text>
+
+            <rect x="510" y="160" width="200" height="50" rx="8" fill="#0891b2"/>
+            <text x="610" y="183" text-anchor="middle" font-size="11.5" font-weight="600" fill="white">📥 Gatherer 2</text>
+            <text x="610" y="200" text-anchor="middle" font-size="10" fill="#a5f3fc">Collects &amp; extracts index info</text>
+
+            <!-- Arrows from Gatherers to Brokers -->
+            <line x1="150" y1="210" x2="200" y2="265" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#harr)"/>
+            <line x1="150" y1="210" x2="380" y2="265" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#harr)"/>
+            <line x1="610" y1="210" x2="560" y2="265" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#harr)"/>
+            <line x1="610" y1="210" x2="380" y2="265" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#harr)"/>
+
+            <!-- Brokers (Row 3) -->
+            <rect x="60"  y="265" width="180" height="50" rx="8" fill="#7c3aed"/>
+            <text x="150" y="287" text-anchor="middle" font-size="11.5" font-weight="600" fill="white">🔍 Broker A</text>
+            <text x="150" y="304" text-anchor="middle" font-size="10" fill="#ddd6fe">Topic-specific index</text>
+
+            <rect x="290" y="265" width="180" height="50" rx="8" fill="#6d28d9"/>
+            <text x="380" y="287" text-anchor="middle" font-size="11.5" font-weight="600" fill="white">🗂️ Broker Registry</text>
+            <text x="380" y="304" text-anchor="middle" font-size="10" fill="#ddd6fe">Register &amp; discover brokers</text>
+
+            <rect x="520" y="265" width="180" height="50" rx="8" fill="#7c3aed"/>
+            <text x="610" y="287" text-anchor="middle" font-size="11.5" font-weight="600" fill="white">🔍 Broker B</text>
+            <text x="610" y="304" text-anchor="middle" font-size="10" fill="#ddd6fe">Topic-specific index</text>
+
+            <!-- Arrows from Brokers to Users -->
+            <line x1="150" y1="315" x2="150" y2="355" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#harr)"/>
+            <line x1="610" y1="315" x2="610" y2="355" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#harr)"/>
+
+            <!-- Users Row 4 -->
+            <rect x="80"  y="355" width="140" height="20" rx="6" fill="#2563eb"/>
+            <text x="150" y="369" text-anchor="middle" font-size="10.5" font-weight="600" fill="white">👤👤 Users</text>
+
+            <rect x="540" y="355" width="140" height="20" rx="6" fill="#2563eb"/>
+            <text x="610" y="369" text-anchor="middle" font-size="10.5" font-weight="600" fill="white">👤👤 Users</text>
+
+            <!-- Cache / Replicator note -->
+            <rect x="290" y="330" width="180" height="20" rx="5" fill="#fef9c3" stroke="#fde047" stroke-width="1"/>
+            <text x="380" y="344" text-anchor="middle" font-size="10" fill="#854d0e">Object Cache &amp; Replicators also supported</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Distributed Architecture -->
+      <div class="subsubsection-title">4.3.2 Distributed Architecture (Harvest)</div>
+      <div class="def-card">
+        <p>The <strong>Harvest</strong> system uses a distributed architecture to gather and distribute data — more efficient than the centralised crawler architecture.</p>
+        <ul class="bullet-list">
+          <li><strong>Gatherer:</strong> Collects and extracts indexing information from one or more web servers. Runs on a web server → generates no external traffic for that server.</li>
+          <li><strong>Broker:</strong> Provides the indexing mechanism and query interface to the gathered data; updates its index incrementally by retrieving from gatherers or other brokers.</li>
+          <li><strong>Broker Registry:</strong> Allows brokers to register and users to find the right broker for their topic.</li>
+          <li><strong>Replicators:</strong> Replicate servers for scalability (e.g., registration broker replicated in different geographic regions).</li>
+          <li><strong>Object Cache:</strong> Reduces network/server load and response latency.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4.4 User Interfaces -->
+    <div class="subsection">
+      <div class="subsection-title">4.4 User Interfaces</div>
+      <div class="def-card">
+        <ul class="bullet-list">
+          <li><strong>Query Interface:</strong> Basic = one or more words. Advanced = Boolean operators, phrase search, proximity search, wildcards, field-specific filters (URL, title, language, date range, file type).</li>
+          <li><strong>Answer Interface:</strong> Typically shows top 10 ranked pages. Each entry includes URL, size, indexing date, and a snippet (title + first lines or selected headings).</li>
+          <li><strong>Inconsistencies:</strong> Different engines handle stop words, stemming, and case sensitivity differently — users may not be aware.</li>
+          <li><strong>Refinement:</strong> Users can refine queries using complex Boolean expressions or find similar pages.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4.5 Ranking -->
+    <div class="subsection">
+      <div class="subsection-title">4.5 Ranking</div>
+      <div class="def-card">
+        <p>Most search engines use variations of the <strong>Boolean or vector model</strong> for ranking. Some also consider metatag terms, page titles, or page popularity.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="mini-card">
+          <h4>🔗 WebQuery</h4>
+          <ul>
+            <li>Ranks pages based on how <strong>connected</strong> each page is.</li>
+            <li>Extends the result set by finding highly connected related pages.</li>
+            <li>Allows visual browsing of web pages.</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <h4>🎯 HITS (Kleinberg)</h4>
+          <ul>
+            <li>Query-dependent ranking.</li>
+            <li><strong>Authorities:</strong> pages with many incoming links (relevant content).</li>
+            <li><strong>Hubs:</strong> pages with many outgoing links (point to relevant content).</li>
+            <li>Positive two-way feedback between hubs and authorities.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <div class="formula-label">📐 HITS — Hub &amp; Authority Equations</div>
+        <div class="formula-main">H(p) = Σ A(q) &nbsp;&nbsp;for all q that p points to</div>
+        <div class="formula-main" style="margin-top:8px">A(p) = Σ H(q) &nbsp;&nbsp;for all q that point to p</div>
+        <div class="formula-note">
+          Values converge to the <span>principal eigenvector</span> of the link matrix of S.<br>
+          <span>S</span> = set of pages that point to or are pointed to by pages in the query result.
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <div class="formula-label">📐 PageRank (Google) — Markov Chain Model</div>
+        <div class="formula-main">PR(a) = q + (1 − q) × Σ PR(p_i) / C(p_i)</div>
+        <div class="formula-note">
+          <span>q</span> = probability of jumping to a random page (typical value: 0.15) &nbsp;|&nbsp;
+          <span>1−q</span> = probability of following a random hyperlink<br>
+          <span>C(e)</span> = number of outgoing links of page e &nbsp;|&nbsp;
+          <span>p_i</span> = pages pointing to page a<br>
+          PageRank simulates a <span>random web surfer</span> and computes the stationary probability of being on each page.
+        </div>
+      </div>
+
+      <div class="box box-amber">
+        <strong>⚠️ HITS Limitations</strong>
+        Does not work with non-existent, repeated, or automatically generated links · Topic of result can become diffused · Avoided by weighting links based on surrounding content.
+      </div>
+    </div>
+
+    <!-- 4.6 Crawling the Web -->
+    <div class="subsection">
+      <div class="subsection-title">4.6 Crawling the Web</div>
+      <div class="def-card">
+        <p><strong>Crawling</strong> is the process of discovering and downloading web content. Crawlers start from a set of seed URLs and extract more URLs recursively.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="mini-card">
+          <h4>🌊 Breadth-First Traversal</h4>
+          <ul>
+            <li>Wide and shallow — fetches all immediate links before going deeper.</li>
+            <li>Good for broad coverage.</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <h4>🔽 Depth-First Traversal</h4>
+          <ul>
+            <li>Deep and narrow — follows links down to max depth before backtracking.</li>
+            <li>Good for focused topics.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="def-card">
+        <div class="subsubsection-title" style="margin-top:0">Crawl Management</div>
+        <ul class="bullet-list">
+          <li>Avoid fetching the same page multiple times.</li>
+          <li>Respect bandwidth and server limits.</li>
+          <li>Handle page updates efficiently.</li>
+          <li>Assign crawlers by domain or geographic region.</li>
+          <li>Maintain a crawl history; use <strong>robots.txt</strong> to honour crawl restrictions.</li>
+        </ul>
+      </div>
+
+      <div class="grid-2">
+        <div class="mini-card">
+          <h4>🕐 Crawl Freshness</h4>
+          <ul>
+            <li>Crawled pages can be 1 day to 2 months old.</li>
+            <li>Popular/frequently updated pages crawled more often.</li>
+            <li>Some crawlers learn update frequencies to optimise revisits.</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <h4>⚙️ Technical Issues</h4>
+          <ul>
+            <li>Robots must avoid overwhelming servers.</li>
+            <li>Pages with frames or authentication are hard to crawl.</li>
+            <li>Broken link percentage in search engine indices: 2–9%.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4.7 Indices -->
+    <div class="subsection">
+      <div class="subsection-title">4.7 Indices</div>
+      <div class="def-card">
+        <p>An <strong>index</strong> is a data structure enabling fast retrieval of documents matching user queries. The main technique is the <strong>inverted file index</strong>.</p>
+        <ul class="bullet-list">
+          <li><strong>Inverted File Index:</strong> Contains a sorted vocabulary (unique words) and for each word, a <em>posting list</em> of documents where it appears.</li>
+          <li><strong>Compression:</strong> Stop word removal, stemming, normalization + compressed posting lists. Index size ≈ 30% of original text (down to 10% with compression).</li>
+          <li><strong>Scale:</strong> For 100 million pages, approximately 150 GB of index storage is needed.</li>
+          <li><strong>Additional Metadata:</strong> URL, document title, snippets (first lines/headings), creation date and size.</li>
+          <li><strong>Query Processing:</strong> Answered by binary search on the vocabulary; multi-word queries require merging of posting lists.</li>
+          <li><strong>Phrase/Proximity Queries:</strong> Require storing word positions; full position indexing is space-consuming.</li>
+          <li><strong>Wildcards:</strong> Prefix queries use two binary searches; complex patterns use sequential scan over the vocabulary.</li>
+          <li><strong>Block-based Indexing:</strong> Reduces index size by indexing logical blocks instead of full documents (used in Glimpse and Harvest).</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4.8 Browsing -->
+    <div class="subsection">
+      <div class="subsection-title">4.8 Browsing</div>
+      <div class="def-card">
+        <p>Web tools based on browsing — particularly <strong>Web Directories</strong> — offer much more relevant results, even though their coverage is very low (less than 1% of all web pages).</p>
+      </div>
+    </div>
+
+    <!-- 4.9 Web Directories -->
+    <div class="subsection">
+      <div class="subsection-title">4.9 Web Directories</div>
+      <div class="def-card">
+        <p>Web directories (also called <em>catalogues, yellow pages, or subject directories</em>) are hierarchical taxonomies that classify human knowledge. The best-known example is <strong>Yahoo!</strong>. Others include eBLAST, LookSmart, Magellan, NewHoo.</p>
+        <ul class="bullet-list">
+          <li>Pages must be <strong>submitted</strong> to the directory; reviewed and, if accepted, classified in one or more categories.</li>
+          <li>The taxonomy is technically a <strong>directed acyclic graph</strong> (cross-references exist).</li>
+          <li>Yahoo! has close to <strong>one million pages</strong> classified; 14 regional/language-specific directories.</li>
+          <li>Classification is done <strong>manually</strong> — automated natural language processing is not yet 100% effective.</li>
+        </ul>
+      </div>
+
+      <div class="compare">
+        <div class="compare-col adv">
+          <h4 style="color:var(--green)">✅ Advantages</h4>
+          <ul>
+            <li>If you find what you're looking for, the answer is almost always useful.</li>
+            <li>Much more relevant results than general search engines.</li>
+            <li>Human-reviewed quality.</li>
+          </ul>
+        </div>
+        <div class="compare-col disadv">
+          <h4 style="color:var(--red)">❌ Disadvantages</h4>
+          <ul>
+            <li>Classification is not specialised enough.</li>
+            <li>Not all web pages are classified.</li>
+            <li>Coverage gets worse every day as the web grows.</li>
+            <li>Users may have different notions of categories than the curators.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4.10 Combining Searching with Browsing -->
+    <div class="subsection">
+      <div class="subsection-title">4.10 Combining Searching with Browsing</div>
+      <div class="def-card">
+        <p><strong>WebGlimpse</strong> is a tool that combines browsing with searching. It attaches a small search box to the bottom of every HTML page, allowing the search to cover the <em>neighbourhood</em> of that page or the whole site — without having to stop browsing.</p>
+        <ul class="bullet-list">
+          <li><strong>Neighbourhood:</strong> Set of web pages reachable by a path of hypertext links within a maximum predefined distance (configurable separately for local and remote pages).</li>
+          <li>WebGlimpse indexes a web site and computes neighbourhoods according to user specifications, adds search boxes to selected pages, collects and caches relevant remote pages.</li>
+          <li>Uses <strong>Glimpse</strong> as its underlying search engine.</li>
+          <li>Useful for building indices for personal web pages or collections of favourite URLs.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4.11 Metasearchers -->
+    <div class="subsection">
+      <div class="subsection-title">4.11 Metasearchers</div>
+      <div class="def-card">
+        <p><strong>Metasearchers</strong> are web servers (or clients) that send a given query to several search engines, web directories, and other databases, collect the answers, and unify them. Examples: <em>Metacrawler, SavvySearch, Copernic, EchoSearch, WebFerret</em>.</p>
+        <ul class="bullet-list">
+          <li>Allow the user to pose the <strong>same query to multiple sources</strong> through a single interface.</li>
+          <li>Results can be sorted by different attributes (host, keyword, date) — often more informative than a single engine's output.</li>
+          <li>Pages returned by <strong>more than one search engine</strong> should be more relevant.</li>
+          <li><em>Limitation:</em> Results are not necessarily all matching pages; the number of results retrieved per engine is limited.</li>
+        </ul>
+      </div>
+
+      <div class="box box-teal">
+        <strong>💡 Advanced: Inquirus (NEC Research Institute)</strong>
+        Downloads and analyses each web page obtained, displays each page with query terms highlighted. Results displayed progressively as they are available. Non-existent or changed pages are discarded. Provides better ranking — but not available to the general public.
+      </div>
+    </div>
+
+    <!-- 4.12 Finding the Needle in the Haystack (User Problems) -->
+    <div class="subsection">
+      <div class="subsection-title">4.12 Finding the Needle in the Haystack — User Problems</div>
+      <div class="def-card">
+        <ul class="bullet-list">
+          <li>Users do not always understand the <strong>logical view of text</strong> adopted by the system (e.g., case sensitivity, stop words).</li>
+          <li><strong>Typos / variants:</strong> 10–20% of matches can be lost; foreign names up to 50% loss.</li>
+          <li><strong>Boolean logic misuse:</strong> ~80% of queries use no Boolean operations; natural language "and/or" differs from Boolean interpretation.</li>
+          <li><strong>Query behaviour:</strong> 25% use only 1 keyword; average 2–3 terms; ~15% restrict by predefined topic; ~80% don't modify the query; ~85% only view the first screen of results; 64% of queries are unique.</li>
+        </ul>
+      </div>
+
+      <div class="subsubsection-title">Teaching the User — Tips for Better Searching</div>
+      <div class="def-card">
+        <ul class="bullet-list">
+          <li>Give as many query terms as possible, including terms that must or must not appear.</li>
+          <li>Include all possible synonyms of important words.</li>
+          <li>Restrict search to a field (title, URL) or limit attributes (date, country) to reduce result size.</li>
+          <li>Consult the search engine's help documentation.</li>
+          <li>Use the browser's "Find" option to locate a term within a retrieved page.</li>
+        </ul>
+      </div>
+
+      <div class="box box-amber">
+        <strong>📌 Rules of Thumb</strong>
+        <em>Specific queries</em> → Look in an encyclopaedia / library. &nbsp;
+        <em>Broad queries</em> → Use Web directories for good starting points. &nbsp;
+        <em>Vague queries</em> → Use Web search engines and iteratively improve the query based on relevant answers.
+      </div>
+    </div>
+
+    <!-- 4.13 Searching using Hyperlinks -->
+    <div class="subsection">
+      <div class="subsection-title">4.13 Searching Using Hyperlinks</div>
+
+      <div class="subsubsection-title">Web Query Languages</div>
+      <div class="def-card">
+        <p>Queries can include the <strong>link structure</strong> connecting web pages, not just content. For example: "find all pages containing at least one image reachable from a given site following at most three links."</p>
+        <ul class="bullet-list">
+          <li><strong>First Generation:</strong> Combine content patterns with graph queries describing link structure (path regular expressions). Includes W3QL, WebSQL, WebLog, WQL.</li>
+          <li><strong>Second Generation (Web Data Manipulation Languages):</strong> Extend to include internal page structure and allow creation of new structures as query results. Includes STRUQL, FLORID, WebOQL.</li>
+        </ul>
+      </div>
+
+      <div class="subsubsection-title">Dynamic Search and Software Agents</div>
+      <div class="def-card">
+        <p>Dynamic search follows links online to discover relevant information — searching the <em>current</em> structure of the web, not the precomputed index. Useful for small, dynamic subsets of the web.</p>
+        <ul class="bullet-list">
+          <li><strong>Fish Search:</strong> Exploits the intuition that relevant documents often have relevant neighbours; guides search by following links in relevant documents.</li>
+          <li><strong>Shark Search:</strong> Improves Fish Search with a better relevance assessment of neighbouring pages. Both algorithms follow links in priority order from a single starting page, using a heuristic to decide whether to follow links on relevant pages.</li>
+          <li><strong>Software Agents:</strong> Search specific information across heterogeneous sources. Key issues: determining relevant sources and merging results (the <em>fusion problem</em>). Examples: Jango, Junglee, Express (shopping robots).</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Final Summary -->
+    <div class="summary">
+      <h4>📌 Unit IV — Key Takeaways</h4>
+      <ul>
+        <li>Parallel IR uses MIMD or SIMD architectures; key strategies are document partitioning and term partitioning.</li>
+        <li>Amdahl's Law limits speedup: maximum = 1/J where J is the sequential fraction.</li>
+        <li>Distributed IR uses a broker-server model; document partitioning suits it best due to coarse granularity.</li>
+        <li>Source selection (broadcast, ranked collection, content modeling) is crucial for efficiency.</li>
+        <li>Result merging strategies range from simple round-robin to global term statistics-based reranking.</li>
+        <li>Web search engines rely on centralised crawler-indexer architectures; Harvest offers a distributed alternative.</li>
+        <li>PageRank (Google) simulates a random surfer; HITS uses hub-authority feedback — both exploit hyperlink structure.</li>
+        <li>Web directories offer high relevance but low coverage; search engines offer broad coverage but lower precision.</li>
+        <li>Metasearchers and WebGlimpse bridge gaps between searching and browsing.</li>
+      </ul>
+    </div>
+
+  </div><!-- /section 4 -->
+
+</div><!-- /container -->
+
+<footer style="text-align:center;padding:32px 24px;color:#94a3b8;font-size:12.5px;margin-top:20px;border-top:1px solid #e2e8f0;background:white;">
+  Structured Notes · Unit IV — Parallel &amp; Distributed IR &amp; Searching the Web · Information Retrieval
+</footer>
+
+</body>
+</html>
